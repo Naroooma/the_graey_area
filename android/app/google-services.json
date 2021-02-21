@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "369717744295",
+    "project_id": "the-graey-area",
+    "storage_bucket": "the-graey-area.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:369717744295:android:79be14a37a35aa1d7b4182",
+        "android_client_info": {
+          "package_name": "com.example.the_graey_area"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "369717744295-d1490h4jjeuhogsgt3dkuh9h6bikoi88.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxeTsAj4YtdE8rhlm9LwL0ePSB-Vif7wY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "369717744295-d1490h4jjeuhogsgt3dkuh9h6bikoi88.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
