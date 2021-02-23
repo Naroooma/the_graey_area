@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
               // need to log out because token persists, but provider does not
               // Provider.of<Auth>(ctx).signout();
 
-              final isNewUser = Provider.of<Auth>(ctx).isNewUser;
+              final isNewUser = Provider.of<Auth>(ctx).isNewUser; //
 
               if (isNewUser) {
                 return CategoryPickerScreen();
