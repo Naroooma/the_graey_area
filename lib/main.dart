@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
           builder: (ctx, userSnapshot) {
             if (userSnapshot.hasData && (!userSnapshot.data.isAnonymous)) {
               // need to log out because token persists, but provider does not
-              //Provider.of<Auth>(ctx).signout();
+              // Provider.of<Auth>(ctx).signout();
 
               final isNewUser = Provider.of<Auth>(ctx).isNewUser;
 
