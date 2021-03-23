@@ -149,21 +149,38 @@ class _AuthFormState extends State<AuthForm> {
                 ),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: RaisedButton(
+                  child: ElevatedButton(
                     child: Icon(Icons.arrow_right),
                     onPressed: _trySubmit,
-                    color: Theme.of(context).primaryColor,
-                    textColor: Theme.of(context).accentColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                        Theme.of(context).primaryColor,
+                      ),
+                      foregroundColor: MaterialStateProperty.all<Color>(
+                        Theme.of(context).accentColor,
+                      ),
+                      shape: MaterialStateProperty.all<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(
                   height: 10,
                 ),
-                FlatButton(
-                  textColor: Theme.of(context).primaryColor,
+                TextButton(
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all<Color>(
+                      Theme.of(context).primaryColor,
+                    ),
+                    shape: MaterialStateProperty.all<OutlinedBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                    ),
+                  ),
                   child: Text(
                       _isLogin
                           ? 'Create new account'
@@ -176,9 +193,6 @@ class _AuthFormState extends State<AuthForm> {
                       _isLogin = !_isLogin;
                     });
                   },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
                 )
               ],
             ),

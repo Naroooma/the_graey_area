@@ -52,11 +52,11 @@ class CategoryPickerScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    RaisedButton(
+                    ElevatedButton(
                       child: Text('Next'),
                       onPressed: () async {
                         if (provider.pickedCategories.length < 3) {
-                          Scaffold.of(context).showSnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text("Select At Least 3 Categories"),
                               backgroundColor: Theme.of(context).errorColor,
@@ -79,10 +79,18 @@ class CategoryPickerScreen extends StatelessWidget {
                                   builder: (_) => QuestionsListScreen()));
                         }
                       },
-                      color: Colors.grey[600],
-                      textColor: Theme.of(context).accentColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.grey[600],
+                        ),
+                        foregroundColor: MaterialStateProperty.all<Color>(
+                          Theme.of(context).accentColor,
+                        ),
+                        shape: MaterialStateProperty.all<OutlinedBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                        ),
                       ),
                     ),
                   ],

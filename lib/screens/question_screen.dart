@@ -73,6 +73,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 min: 0,
                 max: 100,
                 value: _slidervalue,
+                label: _slidervalue.round().toString(),
                 onChanged: (value) {
                   setState(() {
                     _slidervalue = value;
