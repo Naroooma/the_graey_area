@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:the_graey_area/screens/question_screen.dart';
 
 class QuestionTile extends StatelessWidget {
   final Map _question;
@@ -21,6 +22,10 @@ class QuestionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed(QuestionScreen.routeName, arguments: _question);
+      },
       child: Card(
         margin: EdgeInsets.symmetric(vertical: 7, horizontal: 10),
         child: Column(

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:the_graey_area/screens/question_screen.dart';
 
 import '../widgets/question_tile.dart';
 import '../widgets/app_drawer.dart';
@@ -239,10 +240,8 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                   return ListView.builder(
                     itemCount: _matchQuestions.length,
                     itemBuilder: (ctx, index) {
-                      return InkWell(
-                        child:
-                            QuestionTile(_matchQuestions[index], allCategories),
-                      );
+                      return QuestionTile(
+                          _matchQuestions[index], allCategories);
                     },
                   );
                 } else {

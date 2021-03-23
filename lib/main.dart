@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import './screens/auth_screen.dart';
 import './screens/category_picker_screen.dart';
 import './screens/questions_list_screen.dart';
+import './screens/question_screen.dart';
 
 import './providers/categories.dart';
 import './providers/auth.dart';
@@ -55,7 +56,7 @@ class _MyAppState extends State<MyApp> {
           accentColor: Colors.grey[50],
           visualDensity: VisualDensity.adaptivePlatformDensity,
           textTheme: TextTheme(
-            headline5: TextStyle(
+            headline1: TextStyle(
               fontFamily: 'PT_Serif',
             ),
           ),
@@ -107,6 +108,9 @@ class _MyAppState extends State<MyApp> {
             }
           },
         ),
+        routes: {
+          QuestionScreen.routeName: (ctx) => QuestionScreen(),
+        },
       ),
     );
   }
