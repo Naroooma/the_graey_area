@@ -124,7 +124,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
       questionsSnapshot.documents.forEach((doc) => {
             if (!allQuestions.contains(doc.data))
               {
-                allQuestions.add(doc.data),
+                allQuestions.add(doc),
               }
           });
     } catch (exception) {
@@ -144,21 +144,21 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
   List findMatchingQuestions() {
     List matchQuestions = [];
     for (final question in _allQuestions) {
-      for (final category in question['question_categories']) {
+      for (final category in question.data['question_categories']) {
         if (favCategories.contains(category)) {
           matchQuestions.add(question);
+
           break;
         }
       }
     }
 
     // removes duplicates using json
-    matchQuestions = matchQuestions
-        .map((item) => jsonEncode(item))
-        .toSet()
-        .map((item) => jsonDecode(item))
-        .toList();
-
+    // matchQuestions = matchQuestions
+    //     .map((item) => jsonEncode(item))
+    //     .toSet()
+    //     .map((item) => jsonDecode(item))
+    //     .toList();
     return matchQuestions;
   }
 
@@ -239,6 +239,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                   return ListView.builder(
                     itemCount: _matchQuestions.length,
                     itemBuilder: (ctx, index) {
+                      print(_matchQuestions[index]);
                       return QuestionTile(
                           _matchQuestions[index], allCategories);
                     },

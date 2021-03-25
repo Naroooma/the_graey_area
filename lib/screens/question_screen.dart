@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/app_drawer.dart';
@@ -15,7 +17,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
   var _slidervalue = 50.0;
   @override
   Widget build(BuildContext context) {
-    final question = ModalRoute.of(context).settings.arguments as Map;
+    final question =
+        ModalRoute.of(context).settings.arguments as DocumentSnapshot;
+    final questionId = question.documentID;
     final _scaffoldKey = new GlobalKey<ScaffoldState>();
     var _screenSize = MediaQuery.of(context).size;
 
@@ -54,7 +58,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
               Container(
                 height: _screenSize.height / 3,
                 child: AutoSizeText(
-                  question['text'],
+                  question.data['text'],
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Theme.of(context).accentColor,
@@ -73,6 +77,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 min: 0,
                 max: 100,
                 value: _slidervalue,
+                divisions: 10,
                 label: _slidervalue.round().toString(),
                 onChanged: (value) {
                   setState(() {
@@ -139,7 +144,15 @@ class _QuestionScreenState extends State<QuestionScreen> {
                     backgroundColor: MaterialStateProperty.all<Color>(
                         Theme.of(context).accentColor),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    FirebaseUser user =
+                        await FirebaseAuth.instance.currentUser();
+
+                    await Firestore.instance
+                        .collection('users')
+                        .document(user.uid)
+                        .updateData({"answers.$questionId": _slidervalue});
+                  },
                   child: Container(
                       height: 70,
                       width: 70,
