@@ -7,9 +7,12 @@ import 'package:flutter/widgets.dart';
 class Auth with ChangeNotifier {
   final _auth = FirebaseAuth.instance;
   AuthResult _authResult;
+  FirebaseUser _firebaseUser;
 
   get isNewUser {
-    return _authResult.additionalUserInfo.isNewUser;
+    // return _authResult.additionalUserInfo.isNewUser;
+    return this._firebaseUser.metadata.creationTime ==
+        this._firebaseUser.metadata.lastSignInTime;
   }
 
   Future<void> emailSignup(String email, String password) async {
@@ -17,6 +20,7 @@ class Auth with ChangeNotifier {
       email: email,
       password: password,
     );
+    this._firebaseUser = await FirebaseAuth.instance.currentUser();
     // do something if user already exists
   }
 
@@ -25,6 +29,7 @@ class Auth with ChangeNotifier {
       email: email,
       password: password,
     );
+    this._firebaseUser = await FirebaseAuth.instance.currentUser();
     // do something if user doesn't exist
   }
 

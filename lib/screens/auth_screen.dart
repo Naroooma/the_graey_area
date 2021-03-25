@@ -47,7 +47,7 @@ class _AuthScreenState extends State<AuthScreen> {
           message = err.message;
         }
 
-        Scaffold.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
             backgroundColor: Theme.of(context).errorColor,
@@ -78,7 +78,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       color: Theme.of(context).primaryColor,
                       fontFamily: 'PT_Serif',
                       fontStyle: FontStyle.italic,
-                      fontSize: _screenSize.width / 5,
+                      fontSize: _screenSize.width / 5.5,
                     ),
                   ),
                   SizedBox(
@@ -168,21 +168,34 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   Align(
                     alignment: Alignment.centerRight,
-                    child: RaisedButton(
+                    child: ElevatedButton(
                       child: Icon(Icons.arrow_right),
                       onPressed: _trySubmit,
-                      color: Theme.of(context).primaryColor,
-                      textColor: Theme.of(context).accentColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Theme.of(context).primaryColor),
+                        textStyle: MaterialStateProperty.all<TextStyle>(
+                            TextStyle(color: Theme.of(context).accentColor)),
+                        shape: MaterialStateProperty.all<OutlinedBorder>(
+                            RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0))),
                       ),
                     ),
                   ),
                   SizedBox(
                     height: _screenSize.width / 40,
                   ),
-                  FlatButton(
-                    textColor: Theme.of(context).primaryColor,
+                  TextButton(
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.all<Color>(
+                        Theme.of(context).primaryColor,
+                      ),
+                      shape: MaterialStateProperty.all<OutlinedBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                      ),
+                    ),
                     child: Text(
                         _isLogin
                             ? 'Create new account'
@@ -195,9 +208,6 @@ class _AuthScreenState extends State<AuthScreen> {
                         _isLogin = !_isLogin;
                       });
                     },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
                   )
                 ],
               ),

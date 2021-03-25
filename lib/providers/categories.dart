@@ -7,9 +7,11 @@ class Categories with ChangeNotifier {
   List _pickedCategories = [];
   List _favCategories = [];
   List _allCategories = [];
+  bool catExist = false;
 
   get categories async {
     await fetchFavoriteCategories();
+    this.catExist = true;
     return [..._favCategories];
   }
 
