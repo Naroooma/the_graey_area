@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import '../providers/categories.dart';
 
+import '../screens/category_picker_screen.dart';
+
 class AppDrawer extends StatelessWidget {
   final BuildContext ctx;
 
@@ -23,6 +25,10 @@ class AppDrawer extends StatelessWidget {
                 ListTile(
                   leading: Icon(Icons.star_border),
                   title: Text("Categories"),
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushNamed(CategoryPickerScreen.routeName);
+                  },
                 ),
                 Expanded(
                   child: Align(

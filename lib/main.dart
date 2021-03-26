@@ -109,6 +109,7 @@ class _MyAppState extends State<MyApp> {
           },
         ),
         routes: {
+          CategoryPickerScreen.routeName: (ctx) => CategoryPickerScreen(),
           QuestionScreen.routeName: (ctx) => QuestionScreen(),
         },
       ),

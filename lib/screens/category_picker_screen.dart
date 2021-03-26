@@ -10,8 +10,21 @@ import '../widgets/category_list.dart';
 import '../providers/categories.dart';
 
 class CategoryPickerScreen extends StatelessWidget {
+  static const routeName = '/category-picker-screen';
+
   @override
   Widget build(BuildContext context) {
+    List<dynamic> favCategories = [];
+    List<dynamic> allCategories = [];
+
+    Future<void> getData() async {
+      favCategories =
+          await Provider.of<Categories>(context, listen: false).categories;
+      allCategories =
+          await Provider.of<Categories>(context, listen: false).allCategories;
+      print(favCategories);
+    }
+
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: Center(
@@ -41,9 +54,9 @@ class CategoryPickerScreen extends StatelessWidget {
                         vertical: 10,
                       ),
                       child: Text(
-                        provider.pickedCategories.length < 3
+                        provider.favCategories.length < 3
                             ? "Pick at least 3 categories you are interested in"
-                            : "You have picked ${provider.pickedCategories.length} categories",
+                            : "You have picked ${provider.favCategories.length} categories",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Theme.of(context).accentColor,
@@ -55,7 +68,7 @@ class CategoryPickerScreen extends StatelessWidget {
                     ElevatedButton(
                       child: Text('Next'),
                       onPressed: () async {
-                        if (provider.pickedCategories.length < 3) {
+                        if (provider.favCategories.length < 3) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text("Select At Least 3 Categories"),
@@ -69,9 +82,8 @@ class CategoryPickerScreen extends StatelessWidget {
                           await Firestore.instance
                               .collection('users')
                               .document(user.uid)
-                              .updateData({
-                            'fav_categories': provider.pickedCategories
-                          });
+                              .updateData(
+                                  {'fav_categories': provider.favCategories});
 
                           Navigator.push(
                               context,
@@ -97,10 +109,8 @@ class CategoryPickerScreen extends StatelessWidget {
                 );
               },
             ),
-            StreamBuilder(
-              stream: Firestore.instance
-                  .collection('categories')
-                  .snapshots(), // stream, meaning shows changes
+            FutureBuilder(
+              future: getData(), // stream, meaning shows changes
               builder: (ctx, catSnapshot) {
                 if (catSnapshot.connectionState == ConnectionState.waiting) {
                   return Center(
@@ -109,7 +119,8 @@ class CategoryPickerScreen extends StatelessWidget {
                 }
                 return Expanded(
                   child: CategoryList(
-                    catSnapshot.data.documents,
+                    favCategories,
+                    allCategories,
                     /* child: Stack(
                   children: [
                     SizedBox(

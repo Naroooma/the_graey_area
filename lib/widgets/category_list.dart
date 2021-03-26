@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../widgets/category_list_button.dart';
 
 class CategoryList extends StatefulWidget {
-  final catDocs;
+  final allCategories;
+  final favCategories;
 
-  CategoryList(this.catDocs);
+  CategoryList(this.favCategories, this.allCategories);
 
   @override
   _CategoryListState createState() => _CategoryListState();
@@ -15,24 +15,17 @@ class CategoryList extends StatefulWidget {
 class _CategoryListState extends State<CategoryList> {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: Firestore.instance
-          .collection('categories')
-          .snapshots(), // stream, meaning shows changes
-      builder: (ctx, catSnapshot) {
-        if (catSnapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+    return ListView.builder(
+      itemCount: widget.allCategories.length,
+      itemBuilder: (ctx, index) {
+        bool selection = false;
+
+        if (widget.favCategories
+            .contains(widget.allCategories[index]['name'])) {
+          selection = true;
         }
-        return ListView.builder(
-          itemCount: widget.catDocs.length,
-          itemBuilder: (ctx, index) {
-            return CategoryListButton(
-              widget.catDocs[index],
-            );
-          },
-        );
+
+        return CategoryListButton(widget.allCategories[index], selection);
       },
     );
   }

@@ -55,7 +55,10 @@ class QuestionTile extends StatelessWidget {
                     (int index) {
                       return Chip(
                         backgroundColor: correspondingColor(allCategories,
-                            _question.data['question_categories'][index]),
+                                _question.data['question_categories'][index])
+                            .withOpacity(0.8),
+                        labelStyle:
+                            TextStyle(color: Theme.of(context).primaryColor),
                         label: Text(
                           _question.data['question_categories'][index],
                         ),

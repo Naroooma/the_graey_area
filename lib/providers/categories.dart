@@ -1,10 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Categories with ChangeNotifier {
-  List _pickedCategories = [];
   List _favCategories = [];
   List _allCategories = [];
   bool catExist = false;
@@ -20,12 +21,11 @@ class Categories with ChangeNotifier {
     return [..._allCategories];
   }
 
-  get pickedCategories {
-    return [..._pickedCategories];
+  get favCategories {
+    return [..._favCategories];
   }
 
   void reset() {
-    _pickedCategories = [];
     _favCategories = [];
     _allCategories = [];
   }
@@ -47,11 +47,11 @@ class Categories with ChangeNotifier {
     }
 
     // removes duplicates using json
-    // _allCategories = _allCategories
-    //     .map((item) => jsonEncode(item))
-    //     .toSet()
-    //     .map((item) => jsonDecode(item))
-    //     .toList();
+    _allCategories = _allCategories
+        .map((item) => jsonEncode(item))
+        .toSet()
+        .map((item) => jsonDecode(item))
+        .toList();
   }
 
   Future<void> fetchFavoriteCategories() async {
@@ -80,14 +80,14 @@ class Categories with ChangeNotifier {
   }
 
   void addCategory(var value) {
-    if (!_pickedCategories.contains(value)) {
-      _pickedCategories.add(value);
+    if (!_favCategories.contains(value)) {
+      _favCategories.add(value);
       notifyListeners();
     }
   }
 
   void removeCategory(var value) {
-    _pickedCategories.removeWhere((item) => item == value);
+    _favCategories.removeWhere((item) => item == value);
     notifyListeners();
   }
 }

@@ -15,6 +15,12 @@ class QuestionScreen extends StatefulWidget {
 
 class _QuestionScreenState extends State<QuestionScreen> {
   var _slidervalue = 50.0;
+
+  var userOpinion = 3.0;
+  var partnerOpinion = 3.0;
+
+  bool answered = false;
+
   @override
   Widget build(BuildContext context) {
     final question =
@@ -58,7 +64,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
               Container(
                 height: _screenSize.height / 3,
                 child: AutoSizeText(
-                  question.data['text'],
+                  answered
+                      ? "I want to talk to someone who answered: "
+                      : question.data['text'],
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Theme.of(context).accentColor,
@@ -77,8 +85,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 min: 0,
                 max: 100,
                 value: _slidervalue,
-                divisions: 10,
-                label: _slidervalue.round().toString(),
+                divisions: 4,
+                label: (_slidervalue / 25 + 1).toInt().toString(),
                 onChanged: (value) {
                   setState(() {
                     _slidervalue = value;
@@ -148,10 +156,22 @@ class _QuestionScreenState extends State<QuestionScreen> {
                     FirebaseUser user =
                         await FirebaseAuth.instance.currentUser();
 
-                    await Firestore.instance
-                        .collection('users')
-                        .document(user.uid)
-                        .updateData({"answers.$questionId": _slidervalue});
+                    if (!answered) {
+                      userOpinion = _slidervalue / 25 + 1;
+                      await Firestore.instance
+                          .collection('users')
+                          .document(user.uid)
+                          .updateData({"answers.$questionId": userOpinion});
+                      _slidervalue = 50;
+                    } else {
+                      partnerOpinion = _slidervalue / 25 + 1;
+                      // if answered second question, go to waiting room
+                      _slidervalue = 50;
+                    }
+
+                    setState(() {
+                      answered = !answered;
+                    });
                   },
                   child: Container(
                       height: 70,
