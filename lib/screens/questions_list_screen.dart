@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -147,7 +145,6 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
       for (final category in question.data['question_categories']) {
         if (favCategories.contains(category)) {
           matchQuestions.add(question);
-
           break;
         }
       }
@@ -239,7 +236,6 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                   return ListView.builder(
                     itemCount: _matchQuestions.length,
                     itemBuilder: (ctx, index) {
-                      print(_matchQuestions[index]);
                       return QuestionTile(
                           _matchQuestions[index], allCategories);
                     },

@@ -4,18 +4,18 @@ import 'package:provider/provider.dart';
 
 import '../providers/categories.dart';
 
+// ignore: must_be_immutable
 class CategoryListButton extends StatefulWidget {
   final catDoc;
+  bool _selection;
 
-  CategoryListButton(this.catDoc);
+  CategoryListButton(this.catDoc, this._selection);
 
   @override
   _CategoryListButtonState createState() => _CategoryListButtonState();
 }
 
 class _CategoryListButtonState extends State<CategoryListButton> {
-  bool _selection = false;
-
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -23,21 +23,22 @@ class _CategoryListButtonState extends State<CategoryListButton> {
       child: InkResponse(
         onTap: () {
           setState(() {
-            _selection = !_selection;
-            if (_selection == true) {
+            widget._selection = !widget._selection;
+            if (widget._selection == true) {
               Provider.of<Categories>(context, listen: false)
                   .addCategory(widget.catDoc['name']);
             } else {
               Provider.of<Categories>(context, listen: false)
                   .removeCategory(widget.catDoc['name']);
             }
-            print(_selection);
+            print(widget._selection);
           });
         },
         child: Container(
           decoration: BoxDecoration(
-            border:
-                _selection ? Border.all(width: 5, color: Colors.white) : null,
+            border: widget._selection
+                ? Border.all(width: 5, color: Colors.white)
+                : null,
           ),
           height: 60,
           padding: EdgeInsets.all(5),

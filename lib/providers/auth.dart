@@ -46,7 +46,7 @@ class Auth with ChangeNotifier {
   Future<void> signout() async {
     try {
       _auth.signOut();
-    } catch (e) {
+    } catch (a) {
       print('Sign Out Error');
     }
   }

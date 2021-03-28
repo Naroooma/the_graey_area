@@ -6,6 +6,8 @@ import '../widgets/app_drawer.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 
+import 'chat_screen.dart';
+
 class QuestionScreen extends StatefulWidget {
   static const routeName = '/question-screen';
 
@@ -15,12 +17,21 @@ class QuestionScreen extends StatefulWidget {
 
 class _QuestionScreenState extends State<QuestionScreen> {
   var _slidervalue = 50.0;
+
+  var userOpinion = 3.0;
+  var partnerOpinion = 3.0;
+
+  bool answered = false;
+
+  var text = "Your Opinion";
+
+  final _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     final question =
         ModalRoute.of(context).settings.arguments as DocumentSnapshot;
     final questionId = question.documentID;
-    final _scaffoldKey = new GlobalKey<ScaffoldState>();
     var _screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -71,96 +82,177 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 ),
               ),
               SizedBox(
-                height: 60,
-              ),
-              Slider(
-                min: 0,
-                max: 100,
-                value: _slidervalue,
-                divisions: 10,
-                label: _slidervalue.round().toString(),
-                onChanged: (value) {
-                  setState(() {
-                    _slidervalue = value;
-                  });
-                },
-                activeColor: Theme.of(context).accentColor,
-                inactiveColor: Theme.of(context).accentColor.withOpacity(0.5),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    height: 50,
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 20,
-                        ),
-                        AutoSizeText(
-                          "No",
-                          style: TextStyle(
-                            fontSize: _screenSize.width,
-                            color: Theme.of(context).accentColor,
-                            fontFamily: Theme.of(context)
-                                .textTheme
-                                .headline1
-                                .fontFamily,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 50,
-                    child: Row(
-                      children: [
-                        AutoSizeText(
-                          "Yes",
-                          style: TextStyle(
-                            fontSize: _screenSize.width,
-                            color: Theme.of(context).accentColor,
-                            fontFamily: Theme.of(context)
-                                .textTheme
-                                .headline1
-                                .fontFamily,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
                 height: 40,
               ),
-              ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        Theme.of(context).accentColor),
-                  ),
-                  onPressed: () async {
-                    FirebaseUser user =
-                        await FirebaseAuth.instance.currentUser();
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  final inAnimation = Tween<Offset>(
+                          begin: Offset(1.5, 0.0), end: Offset(0.0, 0.0))
+                      .animate(animation);
+                  final outAnimation = Tween<Offset>(
+                          begin: Offset(-1.5, 0.0), end: Offset(0.0, 0.0))
+                      .animate(animation);
+                  if (child.key == ValueKey<String>("Your Opinion")) {
+                    return ClipRect(
+                      child: SlideTransition(
+                        position: outAnimation,
+                        child: child,
+                      ),
+                    );
+                  } else {
+                    return ClipRect(
+                      child: SlideTransition(
+                        position: inAnimation,
+                        child: child,
+                      ),
+                    );
+                  }
+                },
+                child: Container(
+                  key: ValueKey<String>(text),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: _screenSize.height / 25,
+                        child: AutoSizeText(
+                          text,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Theme.of(context).accentColor,
+                            fontFamily: Theme.of(context)
+                                .textTheme
+                                .headline1
+                                .fontFamily,
+                            fontStyle: FontStyle.italic,
+                            fontSize: _screenSize
+                                .width, // maximum so that autosize makes is smaller
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Slider(
+                        min: 0,
+                        max: 100,
+                        value: _slidervalue,
+                        divisions: 4,
+                        label: (_slidervalue / 25 + 1).toInt().toString(),
+                        onChanged: (value) {
+                          setState(() {
+                            _slidervalue = value;
+                          });
+                        },
+                        activeColor: Theme.of(context).accentColor,
+                        inactiveColor:
+                            Theme.of(context).accentColor.withOpacity(0.5),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            height: 50,
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                AutoSizeText(
+                                  "No",
+                                  style: TextStyle(
+                                    fontSize: _screenSize.width,
+                                    color: Theme.of(context).accentColor,
+                                    fontFamily: Theme.of(context)
+                                        .textTheme
+                                        .headline1
+                                        .fontFamily,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 50,
+                            child: Row(
+                              children: [
+                                AutoSizeText(
+                                  "Yes",
+                                  style: TextStyle(
+                                    fontSize: _screenSize.width,
+                                    color: Theme.of(context).accentColor,
+                                    fontFamily: Theme.of(context)
+                                        .textTheme
+                                        .headline1
+                                        .fontFamily,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.resolveWith<Color>(
+                            (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.pressed))
+                                return Theme.of(context)
+                                    .accentColor
+                                    .withOpacity(0.7);
+                              return Theme.of(context).accentColor;
+                            },
+                          ),
+                        ),
+                        onPressed: () async {
+                          FirebaseUser user =
+                              await FirebaseAuth.instance.currentUser();
 
-                    await Firestore.instance
-                        .collection('users')
-                        .document(user.uid)
-                        .updateData({"answers.$questionId": _slidervalue});
-                  },
-                  child: Container(
-                      height: 70,
-                      width: 70,
-                      child: Icon(
-                        Icons.arrow_forward,
-                        color: Theme.of(context).primaryColor,
-                        size: 40,
-                      )))
+                          if (!answered) {
+                            userOpinion = _slidervalue / 25 + 1;
+                            await Firestore.instance
+                                .collection('users')
+                                .document(user.uid)
+                                .updateData(
+                                    {"answers.$questionId": userOpinion});
+                            _slidervalue = 50;
+                          } else {
+                            partnerOpinion = _slidervalue / 25 + 1;
+                            // if answered second question, go to waiting room
+                            Navigator.of(context).pushNamed(
+                                ChatScreen.routeName,
+                                arguments: questionId);
+                            _slidervalue = 50;
+                          }
+
+                          setState(() {
+                            answered = !answered;
+                            text = "Talk to someone who Answered:";
+                          });
+                        },
+                        child: Container(
+                          height: 70,
+                          width: 70,
+                          child: Icon(
+                            Icons.arrow_forward,
+                            color: Theme.of(context).primaryColor,
+                            size: 40,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
