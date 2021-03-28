@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:the_graey_area/screens/chat_screen.dart';
 
 import './screens/auth_screen.dart';
 import './screens/category_picker_screen.dart';
@@ -111,6 +112,7 @@ class _MyAppState extends State<MyApp> {
         routes: {
           CategoryPickerScreen.routeName: (ctx) => CategoryPickerScreen(),
           QuestionScreen.routeName: (ctx) => QuestionScreen(),
+          ChatScreen.routeName: (ctx) => ChatScreen(),
         },
       ),
     );

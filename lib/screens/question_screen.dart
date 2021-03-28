@@ -6,6 +6,8 @@ import '../widgets/app_drawer.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 
+import 'chat_screen.dart';
+
 class QuestionScreen extends StatefulWidget {
   static const routeName = '/question-screen';
 
@@ -226,6 +228,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
                           } else {
                             partnerOpinion = _slidervalue / 25 + 1;
                             // if answered second question, go to waiting room
+                            Navigator.of(context).pushNamed(
+                                ChatScreen.routeName,
+                                arguments: questionId);
                             _slidervalue = 50;
                           }
 
