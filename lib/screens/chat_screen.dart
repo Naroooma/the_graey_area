@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:the_graey_area/widgets/app_drawer.dart';
 import 'package:the_graey_area/widgets/chat/new_message.dart';
 
 import '../widgets/chat/messages.dart';
@@ -31,42 +32,42 @@ class _ChatScreenState extends State<ChatScreen> {
   //   fbm.subscribeToTopic('chat');
   // }
 
+  final _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
-    final qID = ModalRoute.of(context).settings.arguments as String;
+    final q = ModalRoute.of(context).settings.arguments as List;
+    final qText = q[0];
+    final qID = q[1];
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
-        title: Text(qID),
+        backgroundColor: Theme.of(context).accentColor,
+        title: Text(qText),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).primaryColor,
+        ),
+        leading: GestureDetector(
+          child: Icon(
+            Icons.arrow_back,
+            size: 30,
+            color: Theme.of(context).primaryColor,
+          ),
+          onTap: () => Navigator.of(context).pop(),
+        ),
         actions: [
-          DropdownButton(
-            underline: Container(),
-            icon: Icon(
-              Icons.more_vert,
-              color: Theme.of(context).primaryIconTheme.color,
-            ),
-            items: [
-              DropdownMenuItem(
-                child: Container(
-                  child: Row(
-                    children: <Widget>[
-                      Icon(Icons.exit_to_app),
-                      SizedBox(width: 8),
-                      Text('Logout'),
-                    ],
-                  ),
-                ),
-                value: 'logout',
-              ),
-            ],
-            onChanged: (itemIdentifier) {
-              if (itemIdentifier == 'logout') {
-                FirebaseAuth.instance.signOut();
-              }
-            },
+          GestureDetector(
+            child: Icon(Icons.menu, size: 30), // change this size and style
+            onTap: () => _scaffoldKey.currentState.openEndDrawer(),
+          ),
+          SizedBox(
+            width: 20,
           ),
         ],
       ),
+      endDrawer: AppDrawer(context),
+      backgroundColor: Theme.of(context).primaryColor,
       body: Container(
         child: Column(
           children: <Widget>[

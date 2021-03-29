@@ -37,6 +37,7 @@ class _NewMessageState extends State<NewMessage> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Theme.of(context).accentColor,
       margin: EdgeInsets.only(top: 8),
       padding: EdgeInsets.all(8),
       child: Row(

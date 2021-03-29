@@ -166,56 +166,50 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _searchActive
-          ? buildSearchBar()
-          : AppBar(
-              automaticallyImplyLeading: false,
-              title: Text(
-                "Questions",
-                style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontFamily: 'PT_Serif'),
-              ),
-              backgroundColor: Theme.of(context).accentColor,
-              iconTheme: IconThemeData(
-                color: Theme.of(context).primaryColor,
-              ),
-              actions: [
-                SizedBox(
-                  width: _screenSize.width / 20,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _searchActive = !_searchActive;
-                    });
-                    // showSearch(
-                    //     context: context,
-                    //     delegate:
-                    //         Search(_allQuestions, _matchQuestions, allCategories));
-                  },
-                  child: Icon(Icons.search, size: 30),
-                ),
-                SizedBox(
-                  width: _screenSize.width / 20,
-                ),
-                GestureDetector(
-                  child: Icon(Icons.mail_outline, size: 30),
-                ),
-                SizedBox(
-                  width: _screenSize.width / 20,
-                ),
-                GestureDetector(
-                  child:
-                      Icon(Icons.menu, size: 30), // change this size and style
-                  onTap: () => _scaffoldKey.currentState.openEndDrawer(),
-                ),
-                SizedBox(
-                  width: _screenSize.width / 20,
-                ),
-              ],
-            ),
-      endDrawer: AppDrawer(context),
+      // appBar: _searchActive
+      //     ? buildSearchBar()
+      //     : AppBar(
+      //         automaticallyImplyLeading: false,
+      //         title: Text(
+      //           "Questions",
+      //           style: TextStyle(
+      //               color: Theme.of(context).primaryColor,
+      //               fontFamily: 'PT_Serif'),
+      //         ),
+      //         backgroundColor: Theme.of(context).accentColor,
+      //         iconTheme: IconThemeData(
+      //           color: Theme.of(context).primaryColor,
+      //         ),
+      //         actions: [
+      //           SizedBox(
+      //             width: _screenSize.width / 20,
+      //           ),
+      //           GestureDetector(
+      //             onTap: () {
+      //               setState(() {
+      //                 _searchActive = !_searchActive;
+      //               });
+      //               // showSearch(
+      //               //     context: context,
+      //               //     delegate:
+      //               //         Search(_allQuestions, _matchQuestions, allCategories));
+      //             },
+      //             child: Icon(Icons.search, size: 30),
+      //           ),
+      //           SizedBox(
+      //             width: _screenSize.width / 20,
+      //           ),
+      //           GestureDetector(
+      //             child:
+      //                 Icon(Icons.menu, size: 30), // change this size and style
+      //             onTap: () => _scaffoldKey.currentState.openEndDrawer(),
+      //           ),
+      //           SizedBox(
+      //             width: _screenSize.width / 20,
+      //           ),
+      //         ],
+      //       ),
+      // endDrawer: AppDrawer(context),
       backgroundColor: Theme.of(context).primaryColor,
       body: RefreshIndicator(
         backgroundColor: Theme.of(context).primaryColor,
