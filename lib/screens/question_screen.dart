@@ -88,7 +88,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 height: 40,
               ),
               searching
-                  ? PartnerSearcher(questionId)
+                  ? PartnerSearcher(questionId, userOpinion, partnerOpinion)
                   : AnimatedSwitcher(
                       duration: const Duration(milliseconds: 500),
                       transitionBuilder:
@@ -238,17 +238,20 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                 } else {
                                   partnerOpinion = _slidervalue / 25 + 1;
                                   // if answered second question, go to waiting room
-                                  // Navigator.of(context).pushNamed(
-                                  //     ChatScreen.routeName,
-                                  //     arguments: [question.data['text'], questionId]);
+                                  Navigator.of(context).pushNamed(
+                                      ChatScreen.routeName,
+                                      arguments: [
+                                        question.data['text'],
+                                        questionId
+                                      ]);
                                   await Firestore.instance
                                       .collection('questions')
                                       .document(questionId)
                                       .collection('waiting_room')
-                                      .add({
+                                      .document(user.uid)
+                                      .setData({
                                     "answer": userOpinion,
                                     "looking_for": partnerOpinion,
-                                    "user_id": user.uid
                                   });
                                   await Firestore.instance
                                       .collection('users')
