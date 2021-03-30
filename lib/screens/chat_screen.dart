@@ -36,9 +36,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final q = ModalRoute.of(context).settings.arguments as List;
-    final qText = q[0];
-    final qID = q[1];
+    final arguments = ModalRoute.of(context).settings.arguments as List;
+    final qText = arguments[0];
+    final qID = arguments[1];
+    final chatID = arguments[2];
 
     return Scaffold(
       key: _scaffoldKey,
@@ -72,9 +73,9 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: <Widget>[
             Expanded(
-              child: Messages(qID),
+              child: Messages(qID, chatID),
             ),
-            NewMessage(qID),
+            NewMessage(qID, chatID),
           ],
         ),
       ),

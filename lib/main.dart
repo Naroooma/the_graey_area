@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:the_graey_area/home.dart';
 import 'package:the_graey_area/screens/chat_screen.dart';
+import 'package:the_graey_area/widgets/partner_searcher.dart';
 
 import './screens/auth_screen.dart';
 import './screens/category_picker_screen.dart';
@@ -12,6 +13,7 @@ import './screens/question_screen.dart';
 
 import './providers/categories.dart';
 import './providers/auth.dart';
+import 'providers/partner.dart';
 
 void main() => runApp(MyApp());
 
@@ -49,6 +51,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider<Auth>(
           create: (_) => Auth(),
+        ),
+        ChangeNotifierProvider<Partner>(
+          create: (_) => Partner(),
         ),
       ],
       child: MaterialApp(
