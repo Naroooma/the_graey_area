@@ -6,8 +6,9 @@ import 'message_bubble.dart';
 
 class Messages extends StatelessWidget {
   final qID;
+  final chatID;
 
-  Messages(this.qID);
+  Messages(this.qID, this.chatID);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class Messages extends StatelessWidget {
                 .collection('questions')
                 .document(qID)
                 .collection('chats')
-                .document('CPEboEhOoQp9JwTAbik2')
+                .document(chatID)
                 .collection('messages')
                 .orderBy(
                   'createdAt',

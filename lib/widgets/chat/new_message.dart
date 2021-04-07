@@ -4,8 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NewMessage extends StatefulWidget {
   final qID;
+  final chatID;
 
-  NewMessage(this.qID);
+  NewMessage(this.qID, this.chatID);
   @override
   _NewMessageState createState() => _NewMessageState();
 }
@@ -23,7 +24,7 @@ class _NewMessageState extends State<NewMessage> {
         .collection('questions')
         .document(widget.qID)
         .collection('chats')
-        .document('CPEboEhOoQp9JwTAbik2')
+        .document(widget.chatID)
         .collection('messages')
         .add({
       'text': _enteredMessage,
@@ -37,6 +38,7 @@ class _NewMessageState extends State<NewMessage> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Theme.of(context).accentColor,
       margin: EdgeInsets.only(top: 8),
       padding: EdgeInsets.all(8),
       child: Row(
