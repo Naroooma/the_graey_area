@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:the_graey_area/home.dart';
+import 'package:the_graey_area/providers/questions.dart';
 import 'package:the_graey_area/screens/chat_screen.dart';
 
 import './screens/auth_screen.dart';
@@ -13,6 +14,7 @@ import './screens/question_screen.dart';
 import './providers/categories.dart';
 import './providers/auth.dart';
 import 'providers/partner.dart';
+import 'providers/search.dart';
 
 void main() => runApp(MyApp());
 
@@ -48,8 +50,14 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider<Categories>(
           create: (_) => Categories(),
         ),
+        ChangeNotifierProvider<Questions>(
+          create: (_) => Questions(),
+        ),
         ChangeNotifierProvider<Auth>(
           create: (_) => Auth(),
+        ),
+        ChangeNotifierProvider<Search>(
+          create: (_) => Search(),
         ),
         ChangeNotifierProvider<Partner>(
           create: (_) => Partner(),
@@ -115,6 +123,7 @@ class _MyAppState extends State<MyApp> {
           },
         ),
         routes: {
+          Home.routeName: (ctx) => Home(),
           CategoryPickerScreen.routeName: (ctx) => CategoryPickerScreen(),
           QuestionScreen.routeName: (ctx) => QuestionScreen(),
           ChatScreen.routeName: (ctx) => ChatScreen(),

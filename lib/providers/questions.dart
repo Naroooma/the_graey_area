@@ -1,33 +1,74 @@
-// import 'package:flutter/material.dart';
-// import 'dart:async';
-// import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:flutter/widgets.dart';
 
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-// class Questions with ChangeNotifier {
-//   List _allQuestions = [];
+class Questions with ChangeNotifier {
+  List _allQuestions = [];
+  List _matchQuestions = [];
 
-//   getQuestions() async {
-//     try {
-//       await Firestore.instance.collection('questions').snapshots(),
-//     } catch (exception) {
+  Future<List> allQuestions() async {
+    await getQuestions();
+    return [..._allQuestions];
+  }
 
-//     }
+  List matchQuestions(favCategories) {
+    findMatchingQuestions(favCategories);
+    return [..._matchQuestions];
+  }
 
-//     return StreamBuilder<QuerySnapshot>(
-//         stream: Firestore.instance.collection('questions').snapshots(),
-//         builder: (ctx, snapshot) {
-//           snapshot.data.documents.forEach((doc) {
-//             this._allQuestions.add(doc.data);
-//           });
-//         });
-//   }
-// }
+  get getAllQuestions {
+    return [..._allQuestions];
+  }
 
-// await Firestore.instance.collection('questions').getDocuments().then(
-//       (QuerySnapshot qs) => {
-//         qs.documents.forEach((doc) {
-//           this._allQuestions.add(doc.data);
-//         })
-//       },
-//     );
+  get getMatchQuestions {
+    return [..._matchQuestions];
+  }
+
+  bool isEmpty() {
+    if (_allQuestions == [] && _matchQuestions == []) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<List> getQuestions() async {
+    List allQuestions = [];
+    try {
+      QuerySnapshot questionsSnapshot =
+          await Firestore.instance.collection('questions').getDocuments();
+
+      questionsSnapshot.documents.forEach((doc) => {
+            if (!allQuestions.contains(doc.data))
+              {
+                allQuestions.add(doc),
+              }
+          });
+    } catch (exception) {
+      print("ERROR");
+      print(exception);
+    }
+    this._allQuestions = allQuestions;
+  }
+
+  List findMatchingQuestions(List favCategories) {
+    List matchQuestions = [];
+    for (final question in _allQuestions) {
+      for (final category in question.data['question_categories']) {
+        if (favCategories.contains(category)) {
+          matchQuestions.add(question);
+          break;
+        }
+      }
+    }
+
+    // removes duplicates using json
+    // matchQuestions = matchQuestions
+    //     .map((item) => jsonEncode(item))
+    //     .toSet()
+    //     .map((item) => jsonDecode(item))
+    //     .toList();
+    this._matchQuestions = matchQuestions;
+  }
+}

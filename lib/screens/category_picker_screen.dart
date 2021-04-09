@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../home.dart';
 import '../screens/questions_list_screen.dart';
 
 import '../widgets/category_button.dart';
@@ -19,9 +20,9 @@ class CategoryPickerScreen extends StatelessWidget {
 
     Future<void> getData() async {
       favCategories =
-          await Provider.of<Categories>(context, listen: false).categories;
+          await Provider.of<Categories>(context, listen: false).favCategories();
       allCategories =
-          await Provider.of<Categories>(context, listen: false).allCategories;
+          await Provider.of<Categories>(context, listen: false).allCategories();
       print(favCategories);
     }
 
@@ -54,9 +55,9 @@ class CategoryPickerScreen extends StatelessWidget {
                         vertical: 10,
                       ),
                       child: Text(
-                        provider.favCategories.length < 3
+                        provider.getFavCategories.length < 3
                             ? "Pick at least 3 categories you are interested in"
-                            : "You have picked ${provider.favCategories.length} categories",
+                            : "You have picked ${provider.getFavCategories.length} categories",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Theme.of(context).accentColor,
@@ -68,7 +69,7 @@ class CategoryPickerScreen extends StatelessWidget {
                     ElevatedButton(
                       child: Text('Next'),
                       onPressed: () async {
-                        if (provider.favCategories.length < 3) {
+                        if (provider.getFavCategories.length < 3) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text("Select At Least 3 Categories"),
@@ -82,13 +83,11 @@ class CategoryPickerScreen extends StatelessWidget {
                           await Firestore.instance
                               .collection('users')
                               .document(user.uid)
-                              .updateData(
-                                  {'fav_categories': provider.favCategories});
+                              .updateData({
+                            'fav_categories': provider.getFavCategories
+                          });
 
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => QuestionsListScreen()));
+                          Navigator.pushNamed(context, Home.routeName);
                         }
                       },
                       style: ButtonStyle(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:the_graey_area/providers/questions.dart';
+import 'package:the_graey_area/providers/search.dart';
 
 import '../widgets/question_tile.dart';
 import '../providers/categories.dart';
@@ -19,7 +21,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
   List<dynamic> _matchQuestions = [];
 
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
-  bool _force = true;
+  bool _force = false;
 
   bool _searchActive = false;
   String query = "";
@@ -100,115 +102,53 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
   }
 
   Future<void> getData() async {
-    if ((_matchQuestions == null && allCategories == null) || _force) {
-      print('fetching data...');
+    // if at least one of the providers are empty or force => fetchData
+    if (Provider.of<Questions>(context, listen: false).isEmpty() ||
+        Provider.of<Categories>(context, listen: false).isEmpty() ||
+        _force) {
+      await fetchData();
+      _force = false;
+    } else {
+      // if providers are not empty => put provider data into local variables
       favCategories =
-          await Provider.of<Categories>(context, listen: false).categories;
+          Provider.of<Categories>(context, listen: false).getFavCategories;
       allCategories =
-          await Provider.of<Categories>(context, listen: false).allCategories;
-      _allQuestions = await getQuestions();
-      _matchQuestions = findMatchingQuestions();
+          Provider.of<Categories>(context, listen: false).getAllCategories;
+      _allQuestions =
+          Provider.of<Questions>(context, listen: false).getAllQuestions;
+      _matchQuestions =
+          Provider.of<Questions>(context, listen: false).getMatchQuestions;
     }
+  }
+
+  Future<void> fetchData() async {
+    favCategories =
+        await Provider.of<Categories>(context, listen: false).favCategories();
+    allCategories =
+        await Provider.of<Categories>(context, listen: false).allCategories();
+    _allQuestions =
+        await Provider.of<Questions>(context, listen: false).allQuestions();
+    _matchQuestions = Provider.of<Questions>(context, listen: false)
+        .matchQuestions(favCategories);
+
     _force = false;
-  }
-
-  Future<List> getQuestions() async {
-    List allQuestions = [];
-    try {
-      QuerySnapshot questionsSnapshot =
-          await Firestore.instance.collection('questions').getDocuments();
-
-      questionsSnapshot.documents.forEach((doc) => {
-            if (!allQuestions.contains(doc.data))
-              {
-                allQuestions.add(doc),
-              }
-          });
-    } catch (exception) {
-      print("ERROR");
-      print(exception);
-    }
-
-    // removes duplicates using json
-    // allQuestions = allQuestions
-    //     .map((item) => jsonEncode(item))
-    //     .toSet()
-    //     .map((item) => jsonDecode(item))
-    //     .toList();
-    return allQuestions;
-  }
-
-  List findMatchingQuestions() {
-    List matchQuestions = [];
-    for (final question in _allQuestions) {
-      for (final category in question.data['question_categories']) {
-        if (favCategories.contains(category)) {
-          matchQuestions.add(question);
-          break;
-        }
-      }
-    }
-
-    // removes duplicates using json
-    // matchQuestions = matchQuestions
-    //     .map((item) => jsonEncode(item))
-    //     .toSet()
-    //     .map((item) => jsonDecode(item))
-    //     .toList();
-    return matchQuestions;
   }
 
   @override
   Widget build(BuildContext context) {
+    _allQuestions =
+        Provider.of<Questions>(context, listen: false).getAllQuestions;
+    favCategories =
+        Provider.of<Categories>(context, listen: false).getFavCategories;
+    allCategories =
+        Provider.of<Categories>(context, listen: false).getAllCategories;
+    _matchQuestions =
+        Provider.of<Questions>(context, listen: false).getMatchQuestions;
+
     var _screenSize = MediaQuery.of(context).size;
-    print(_screenSize.width);
 
     return Scaffold(
       key: _scaffoldKey,
-      // appBar: _searchActive
-      //     ? buildSearchBar()
-      //     : AppBar(
-      //         automaticallyImplyLeading: false,
-      //         title: Text(
-      //           "Questions",
-      //           style: TextStyle(
-      //               color: Theme.of(context).primaryColor,
-      //               fontFamily: 'PT_Serif'),
-      //         ),
-      //         backgroundColor: Theme.of(context).accentColor,
-      //         iconTheme: IconThemeData(
-      //           color: Theme.of(context).primaryColor,
-      //         ),
-      //         actions: [
-      //           SizedBox(
-      //             width: _screenSize.width / 20,
-      //           ),
-      //           GestureDetector(
-      //             onTap: () {
-      //               setState(() {
-      //                 _searchActive = !_searchActive;
-      //               });
-      //               // showSearch(
-      //               //     context: context,
-      //               //     delegate:
-      //               //         Search(_allQuestions, _matchQuestions, allCategories));
-      //             },
-      //             child: Icon(Icons.search, size: 30),
-      //           ),
-      //           SizedBox(
-      //             width: _screenSize.width / 20,
-      //           ),
-      //           GestureDetector(
-      //             child:
-      //                 Icon(Icons.menu, size: 30), // change this size and style
-      //             onTap: () => _scaffoldKey.currentState.openEndDrawer(),
-      //           ),
-      //           SizedBox(
-      //             width: _screenSize.width / 20,
-      //           ),
-      //         ],
-      //       ),
-      // endDrawer: AppDrawer(context),
       backgroundColor: Theme.of(context).primaryColor,
       body: RefreshIndicator(
         backgroundColor: Theme.of(context).primaryColor,
@@ -218,29 +158,36 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
           });
         }, // don't call getData because of FutureBuilder
         child: Center(
-          child: FutureBuilder(
-            // gets all the questions
-            future: getData(),
-            builder: (_, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
-              } else {
-                if (!_searchActive) {
-                  return ListView.builder(
+            child: Provider.of<Questions>(context, listen: false).isEmpty() ||
+                    Provider.of<Categories>(context, listen: false).isEmpty() ||
+                    _force
+                ? FutureBuilder(
+                    // gets all the questions
+                    future: fetchData(),
+                    builder: (_, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else {
+                        if (!_searchActive) {
+                          return ListView.builder(
+                              itemCount: _matchQuestions.length,
+                              itemBuilder: (ctx, index) {
+                                return QuestionTile(
+                                    _matchQuestions[index], allCategories);
+                              });
+                        } else {
+                          print('Building Search Results');
+                          return _buildSearchResults();
+                        }
+                      }
+                    },
+                  )
+                : ListView.builder(
                     itemCount: _matchQuestions.length,
                     itemBuilder: (ctx, index) {
                       return QuestionTile(
                           _matchQuestions[index], allCategories);
-                    },
-                  );
-                } else {
-                  print('Building Search Results');
-                  return _buildSearchResults();
-                }
-              }
-            },
-          ),
-        ),
+                    })),
       ),
     );
   }
