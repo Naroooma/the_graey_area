@@ -164,6 +164,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
     var _screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).primaryColor,
       key: _scaffoldKey,
       appBar: AppBar(

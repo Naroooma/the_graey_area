@@ -86,6 +86,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     var _screenSize = MediaQuery.of(context).size;
+    Provider.of<Search>(context, listen: false).reset();
+
+    _filter.addListener(() {
+      Provider.of<Search>(context, listen: false).editQuery(_filter.text);
+    });
     return Scaffold(
       key: _scaffoldKey,
       appBar: Provider.of<Search>(context, listen: false).searchActive

@@ -72,13 +72,8 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     );
   }
 
-  Widget _buildSearchResults() {
-    _filter.addListener(() {
-      print(_filter.text);
-      setState(() {
-        query = _filter.text;
-      });
-    });
+  Widget _buildSearchResults(query) {
+    print(query);
     List<dynamic> suggestionList = [];
     query.isEmpty
         ? suggestionList = _matchQuestions
@@ -136,6 +131,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(Provider.of<Search>(context, listen: true).query);
     _allQuestions =
         Provider.of<Questions>(context, listen: false).getAllQuestions;
     favCategories =
@@ -168,26 +164,29 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return CircularProgressIndicator();
                       } else {
-                        if (!_searchActive) {
-                          return ListView.builder(
-                              itemCount: _matchQuestions.length,
-                              itemBuilder: (ctx, index) {
-                                return QuestionTile(
-                                    _matchQuestions[index], allCategories);
-                              });
-                        } else {
-                          print('Building Search Results');
-                          return _buildSearchResults();
-                        }
+                        print(1);
+                        return ListView.builder(
+                            itemCount: _matchQuestions.length,
+                            itemBuilder: (ctx, index) {
+                              return QuestionTile(
+                                  _matchQuestions[index], allCategories);
+                            });
                       }
                     },
                   )
-                : ListView.builder(
-                    itemCount: _matchQuestions.length,
-                    itemBuilder: (ctx, index) {
-                      return QuestionTile(
-                          _matchQuestions[index], allCategories);
-                    })),
+                : Provider.of<Search>(context).searchActive
+                    ? Consumer<Search>(
+                        builder: (context, cart, child) {
+                          return _buildSearchResults(
+                              Provider.of<Search>(context).query);
+                        },
+                      )
+                    : ListView.builder(
+                        itemCount: _matchQuestions.length,
+                        itemBuilder: (ctx, index) {
+                          return QuestionTile(
+                              _matchQuestions[index], allCategories);
+                        })),
       ),
     );
   }

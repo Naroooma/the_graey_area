@@ -7,4 +7,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Search with ChangeNotifier {
   String query = "";
   bool searchActive = false;
+
+  void editQuery(text) {
+    this.query = text;
+    notifyListeners();
+  }
+
+  void reset() {
+    this.query = "";
+  }
 }
