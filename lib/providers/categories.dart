@@ -10,19 +10,30 @@ class Categories with ChangeNotifier {
   List _allCategories = [];
   bool catExist = false;
 
-  get categories async {
+  Future<List> favCategories() async {
     await fetchFavoriteCategories();
     this.catExist = true;
     return [..._favCategories];
   }
 
-  get allCategories async {
+  Future<List> allCategories() async {
     await fetchAllCategories();
     return [..._allCategories];
   }
 
-  get favCategories {
+  get getFavCategories {
     return [..._favCategories];
+  }
+
+  get getAllCategories {
+    return [..._allCategories];
+  }
+
+  bool isEmpty() {
+    if (_favCategories == [] && _allCategories == []) {
+      return true;
+    }
+    return false;
   }
 
   void reset() {
