@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:the_graey_area/widgets/app_drawer.dart';
 import 'package:the_graey_area/widgets/chat/new_message.dart';
@@ -14,7 +13,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  @override
+  // @override
   // void initState() {
   //   super.initState();
   //   final fbm = FirebaseMessaging();

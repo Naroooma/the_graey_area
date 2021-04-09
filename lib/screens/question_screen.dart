@@ -55,7 +55,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
     }
   }
 
-  Widget AnswerTile(_screenSize, questionId) {
+  Widget answerTile(_screenSize, questionId) {
     return Container(
       key: ValueKey<String>(text),
       child: Column(
@@ -234,7 +234,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                     : AnimatedSwitcher(
                         duration: const Duration(milliseconds: 500),
                         transitionBuilder: slideAnimation,
-                        child: AnswerTile(_screenSize, questionId)),
+                        child: answerTile(_screenSize, questionId)),
               ),
             ],
           ),

@@ -16,7 +16,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var _userPassword = '';
   var _userName = '';
 
-  void _trySubmit() {
+  void _trySubmit() async {
     final auth = Provider.of<Auth>(context, listen: false);
     final isValid = _formKey.currentState.validate();
     FocusScope.of(context).unfocus();
@@ -26,22 +26,19 @@ class _AuthScreenState extends State<AuthScreen> {
 
       try {
         if (_isLogin) {
-          auth.emailLogin(
+          await auth.emailLogin(
             _userEmail.trim(),
             _userPassword.trim(),
           );
         } else {
-          auth
-              .emailSignup(
+          await auth.emailSignup(
             _userEmail.trim(),
             _userPassword.trim(),
-          )
-              .then((_) {
-            auth.sendUsername(_userName, _userEmail);
-          });
+          );
+          await auth.sendUsername(_userName, _userEmail);
         }
       } on PlatformException catch (err) {
-        var message = 'An error occurred, pelase check your credentials!';
+        var message = 'An error occurred, please check your credentials!';
 
         if (err.message != null) {
           message = err.message;

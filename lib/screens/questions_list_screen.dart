@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/question_tile.dart';
-import '../widgets/app_drawer.dart';
 import '../providers/categories.dart';
 
 class QuestionsListScreen extends StatefulWidget {

@@ -68,7 +68,6 @@ class MessageBubble extends StatelessWidget {
           ],
         ),
       ],
-      overflow: Overflow.visible,
     );
   }
 }

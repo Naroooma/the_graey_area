@@ -4,11 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:the_graey_area/home.dart';
 import 'package:the_graey_area/screens/chat_screen.dart';
-import 'package:the_graey_area/widgets/partner_searcher.dart';
 
 import './screens/auth_screen.dart';
 import './screens/category_picker_screen.dart';
-import './screens/questions_list_screen.dart';
+
 import './screens/question_screen.dart';
 
 import './providers/categories.dart';
