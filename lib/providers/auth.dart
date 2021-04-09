@@ -21,7 +21,6 @@ class Auth with ChangeNotifier {
       password: password,
     );
     this._firebaseUser = await FirebaseAuth.instance.currentUser();
-    // do something if user already exists
   }
 
   Future<void> emailLogin(String email, String password) async {
@@ -30,7 +29,6 @@ class Auth with ChangeNotifier {
       password: password,
     );
     this._firebaseUser = await FirebaseAuth.instance.currentUser();
-    // do something if user doesn't exist
   }
 
   Future<void> sendUsername(String username, String email) async {
