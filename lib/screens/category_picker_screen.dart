@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:the_graey_area/screens/questions_chats_screen.dart';
 
 import '../home.dart';
 import '../screens/questions_list_screen.dart';
@@ -87,7 +88,8 @@ class CategoryPickerScreen extends StatelessWidget {
                             'fav_categories': provider.getFavCategories
                           });
 
-                          Navigator.pushNamed(context, Home.routeName);
+                          Navigator.pushNamed(
+                              context, QuestionsChatsScreen.routeName);
                         }
                       },
                       style: ButtonStyle(

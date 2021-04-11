@@ -154,13 +154,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ? TabBarView(
               controller: _tabController,
               children: <Widget>[
-                QuestionsChatScreen(),
+                QuestionsChatsScreen(),
                 QuestionsListScreen(),
               ],
             )
           : _tabController.index == 1
               ? QuestionsListScreen()
-              : QuestionsChatScreen(),
+              : QuestionsChatsScreen(),
     );
   }
 }
