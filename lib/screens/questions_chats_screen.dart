@@ -92,8 +92,8 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
           Icons.add,
           color: Theme.of(context).accentColor,
         ),
-        onPressed: () =>
-            Navigator.pushNamed(context, QuestionsListScreen.routeName),
+        onPressed: () => Navigator.pushReplacementNamed(
+            context, QuestionsListScreen.routeName),
       ),
     );
   }
