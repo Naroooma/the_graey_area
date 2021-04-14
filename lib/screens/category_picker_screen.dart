@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../home.dart';
-import '../screens/questions_list_screen.dart';
+import 'package:the_graey_area/screens/questions_chats_screen.dart';
 
 import '../widgets/category_button.dart';
 import '../widgets/category_list.dart';
@@ -23,7 +21,6 @@ class CategoryPickerScreen extends StatelessWidget {
           await Provider.of<Categories>(context, listen: false).favCategories();
       allCategories =
           await Provider.of<Categories>(context, listen: false).allCategories();
-      print(favCategories);
     }
 
     return Scaffold(
@@ -87,7 +84,8 @@ class CategoryPickerScreen extends StatelessWidget {
                             'fav_categories': provider.getFavCategories
                           });
 
-                          Navigator.pushNamed(context, Home.routeName);
+                          Navigator.pushNamed(
+                              context, QuestionsChatsScreen.routeName);
                         }
                       },
                       style: ButtonStyle(

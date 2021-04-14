@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:the_graey_area/home.dart';
 import 'package:the_graey_area/providers/questions.dart';
+import 'package:the_graey_area/screens/active_chats_screen.dart';
 import 'package:the_graey_area/screens/chat_screen.dart';
+import 'package:the_graey_area/screens/questions_chats_screen.dart';
 
 import './screens/auth_screen.dart';
 import './screens/category_picker_screen.dart';
@@ -15,6 +17,7 @@ import './providers/categories.dart';
 import './providers/auth.dart';
 import 'providers/partner.dart';
 import 'providers/search.dart';
+import 'screens/questions_list_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -113,7 +116,7 @@ class _MyAppState extends State<MyApp> {
                           futuresnapshot.data == true) {
                         return CategoryPickerScreen();
                       } else {
-                        return Home();
+                        return QuestionsChatsScreen();
                       }
                     }
                   });
@@ -124,6 +127,9 @@ class _MyAppState extends State<MyApp> {
         ),
         routes: {
           Home.routeName: (ctx) => Home(),
+          QuestionsChatsScreen.routeName: (ctx) => QuestionsChatsScreen(),
+          QuestionsListScreen.routeName: (ctx) => QuestionsListScreen(),
+          ActiveChatsScreen.routeName: (ctx) => ActiveChatsScreen(),
           CategoryPickerScreen.routeName: (ctx) => CategoryPickerScreen(),
           QuestionScreen.routeName: (ctx) => QuestionScreen(),
           ChatScreen.routeName: (ctx) => ChatScreen(),

@@ -8,8 +8,6 @@ import 'package:the_graey_area/widgets/reqAutoText.dart';
 
 import '../widgets/app_drawer.dart';
 
-import 'chat_screen.dart';
-
 class QuestionScreen extends StatefulWidget {
   static const routeName = '/question-screen';
 
@@ -25,7 +23,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
   bool answered = false;
 
-  bool startSearch = false;
+  bool searching = false;
 
   var text = "Your Opinion";
 
@@ -146,7 +144,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                   text = "Talk to someone who Answered:";
                 } else {
                   // start search for partner
-                  startSearch = true;
+                  searching = true;
                 }
               });
             },
@@ -164,10 +162,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
     var _screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).primaryColor,
       key: _scaffoldKey,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).accentColor,
+        backgroundColor: Colors.grey[300],
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
         ),
@@ -200,42 +199,12 @@ class _QuestionScreenState extends State<QuestionScreen> {
               SizedBox(
                 height: 40,
               ),
-              // if chat found, replace q page with chat page
-              // ? Column(
-              //   children: [
-              //     ReqAutoText(
-              //       "A Match Has Been Found!", _screenSize, 100),
-              //       TextButton(onPressed: () {
-              //         Navigator.of(context).pushReplacementNamed(
-              //     ChatScreen.routeName,
-              //     arguments: [question.data['text'], questionId, chatID]);
-              //       }, child: child)
-              //   ],
-              // )
-              Consumer<Partner>(
-                builder: (context, provider, child) {
-                  if (provider.chatID != null) {
-                    startSearch = false;
-                    Future.microtask(() {
-                      Navigator.of(context).pushReplacementNamed(
-                          ChatScreen.routeName,
-                          arguments: [
-                            question.data['text'],
-                            questionId,
-                            provider.chatID
-                          ]);
-                      provider.resetProvider();
-                    });
-                  }
-                  return child;
-                },
-                child: startSearch
-                    ? PartnerSearcher(questionId, userOpinion, partnerOpinion)
-                    : AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 500),
-                        transitionBuilder: slideAnimation,
-                        child: answerTile(_screenSize, questionId)),
-              ),
+              searching
+                  ? PartnerSearcher(questionId, userOpinion, partnerOpinion)
+                  : AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                      transitionBuilder: slideAnimation,
+                      child: answerTile(_screenSize, questionId)),
             ],
           ),
         ),

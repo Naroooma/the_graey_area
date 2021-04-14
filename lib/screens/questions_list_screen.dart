@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/providers/questions.dart';
 import 'package:the_graey_area/providers/search.dart';
+import 'package:the_graey_area/widgets/app_drawer.dart';
 
 import '../widgets/question_tile.dart';
 import '../providers/categories.dart';
+import 'questions_chats_screen.dart';
 
 class QuestionsListScreen extends StatefulWidget {
+  static const routeName = '/questions-list-screen';
+
   final List<String> list = List.generate(10, (index) => "Text $index");
 
   @override
@@ -29,7 +32,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
 
   AppBar buildSearchBar() {
     return AppBar(
-      backgroundColor: Theme.of(context).accentColor,
+      backgroundColor: Colors.grey[300],
       iconTheme: IconThemeData(
         color: Theme.of(context).primaryColor,
       ),
@@ -74,7 +77,6 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
 
   Widget _buildSearchResults() {
     _filter.addListener(() {
-      print(_filter.text);
       setState(() {
         query = _filter.text;
       });
@@ -148,6 +150,50 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     var _screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
+      appBar: _searchActive
+          ? buildSearchBar()
+          : AppBar(
+              automaticallyImplyLeading: false,
+              title: Text(
+                "Questions",
+                style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontFamily: 'PT_Serif'),
+              ),
+              backgroundColor: Colors.grey[300],
+              iconTheme: IconThemeData(
+                color: Theme.of(context).primaryColor,
+              ),
+              actions: [
+                SizedBox(
+                  width: _screenSize.width / 20,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _searchActive = !_searchActive;
+                    });
+                    // showSearch(
+                    //     context: context,
+                    //     delegate:
+                    //         Search(_allQuestions, _matchQuestions, allCategories));
+                  },
+                  child: Icon(Icons.search, size: 30),
+                ),
+                SizedBox(
+                  width: _screenSize.width / 20,
+                ),
+                GestureDetector(
+                  child:
+                      Icon(Icons.menu, size: 30), // change this size and style
+                  onTap: () => _scaffoldKey.currentState.openEndDrawer(),
+                ),
+                SizedBox(
+                  width: _screenSize.width / 20,
+                ),
+              ],
+            ),
+      endDrawer: AppDrawer(context),
       key: _scaffoldKey,
       backgroundColor: Theme.of(context).primaryColor,
       body: RefreshIndicator(
@@ -168,26 +214,32 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return CircularProgressIndicator();
                       } else {
-                        if (!_searchActive) {
-                          return ListView.builder(
-                              itemCount: _matchQuestions.length,
-                              itemBuilder: (ctx, index) {
-                                return QuestionTile(
-                                    _matchQuestions[index], allCategories);
-                              });
-                        } else {
-                          print('Building Search Results');
-                          return _buildSearchResults();
-                        }
+                        return ListView.builder(
+                            itemCount: _matchQuestions.length,
+                            itemBuilder: (ctx, index) {
+                              return QuestionTile(
+                                  _matchQuestions[index], allCategories);
+                            });
                       }
                     },
                   )
-                : ListView.builder(
-                    itemCount: _matchQuestions.length,
-                    itemBuilder: (ctx, index) {
-                      return QuestionTile(
-                          _matchQuestions[index], allCategories);
-                    })),
+                : _searchActive
+                    ? _buildSearchResults()
+                    : ListView.builder(
+                        itemCount: _matchQuestions.length,
+                        itemBuilder: (ctx, index) {
+                          return QuestionTile(
+                              _matchQuestions[index], allCategories);
+                        })),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        child: Icon(
+          Icons.message,
+          color: Theme.of(context).accentColor,
+        ),
+        onPressed: () => Navigator.pushReplacementNamed(
+            context, QuestionsChatsScreen.routeName),
       ),
     );
   }

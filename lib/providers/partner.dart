@@ -79,6 +79,8 @@ class Partner with ChangeNotifier {
         return;
       }
     }
+    // if no match found, tell user to come back later
+    notifyChatNotFound();
 
     // if no match found, setup stream listner that waits for flag
     StreamSubscription foundListener;
@@ -113,9 +115,25 @@ class Partner with ChangeNotifier {
     });
   }
 
-  Future<void> notifyChatFound(String newChatID) {
+  Future<void> notifyChatFound(String newChatID) async {
     this.chatID = newChatID;
     notifyListeners();
     // add chat id to active_chats for user
+
+    await Firestore.instance
+        .collection('users')
+        .document(userID)
+        .collection("active_questions")
+        .document(qID)
+        .updateData(
+      {
+        "active_chats": FieldValue.arrayUnion([chatID])
+      },
+    );
+  }
+
+  void notifyChatNotFound() {
+    this.chatID = 0;
+    notifyListeners();
   }
 }

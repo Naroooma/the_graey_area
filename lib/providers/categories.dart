@@ -30,7 +30,7 @@ class Categories with ChangeNotifier {
   }
 
   bool isEmpty() {
-    if (_favCategories == [] && _allCategories == []) {
+    if (_favCategories.isEmpty && _allCategories.isEmpty) {
       return true;
     }
     return false;
