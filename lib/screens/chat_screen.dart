@@ -42,7 +42,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).accentColor,
+        backgroundColor: Colors.grey[300],
         title: Text("Insert Question Text from database using ID"),
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,

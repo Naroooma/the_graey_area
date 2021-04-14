@@ -168,7 +168,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
       backgroundColor: Theme.of(context).primaryColor,
       key: _scaffoldKey,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).accentColor,
+        backgroundColor: Colors.grey[300],
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
         ),

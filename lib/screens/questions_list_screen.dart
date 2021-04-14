@@ -33,7 +33,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
 
   AppBar buildSearchBar() {
     return AppBar(
-      backgroundColor: Theme.of(context).accentColor,
+      backgroundColor: Colors.grey[300],
       iconTheme: IconThemeData(
         color: Theme.of(context).primaryColor,
       ),
@@ -163,7 +163,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                     color: Theme.of(context).primaryColor,
                     fontFamily: 'PT_Serif'),
               ),
-              backgroundColor: Theme.of(context).accentColor,
+              backgroundColor: Colors.grey[300],
               iconTheme: IconThemeData(
                 color: Theme.of(context).primaryColor,
               ),

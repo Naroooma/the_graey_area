@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:the_graey_area/home.dart';
 import 'package:the_graey_area/providers/questions.dart';
+import 'package:the_graey_area/screens/active_chats_screen.dart';
 import 'package:the_graey_area/screens/chat_screen.dart';
 import 'package:the_graey_area/screens/questions_chats_screen.dart';
 
@@ -128,6 +129,7 @@ class _MyAppState extends State<MyApp> {
           Home.routeName: (ctx) => Home(),
           QuestionsChatsScreen.routeName: (ctx) => QuestionsChatsScreen(),
           QuestionsListScreen.routeName: (ctx) => QuestionsListScreen(),
+          ActiveChatsScreen.routeName: (ctx) => ActiveChatsScreen(),
           CategoryPickerScreen.routeName: (ctx) => CategoryPickerScreen(),
           QuestionScreen.routeName: (ctx) => QuestionScreen(),
           ChatScreen.routeName: (ctx) => ChatScreen(),
