@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/screens/questions_chats_screen.dart';
 
-import '../home.dart';
-import '../screens/questions_list_screen.dart';
-
 import '../widgets/category_button.dart';
 import '../widgets/category_list.dart';
 import '../providers/categories.dart';
@@ -24,7 +21,6 @@ class CategoryPickerScreen extends StatelessWidget {
           await Provider.of<Categories>(context, listen: false).favCategories();
       allCategories =
           await Provider.of<Categories>(context, listen: false).allCategories();
-      print(favCategories);
     }
 
     return Scaffold(

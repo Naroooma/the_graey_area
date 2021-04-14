@@ -1,15 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/providers/partner.dart';
 import 'package:the_graey_area/screens/chat_screen.dart';
 import 'package:the_graey_area/widgets/reqAutoText.dart';
 
 class PartnerSearcher extends StatelessWidget {
-  var qID;
-  var answer;
-  var lookingFor;
+  final qID;
+  final answer;
+  final lookingFor;
 
   PartnerSearcher(this.qID, this.answer, this.lookingFor);
 

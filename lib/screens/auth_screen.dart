@@ -57,7 +57,6 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     var _screenSize = MediaQuery.of(context).size;
-    print(_screenSize);
     return Scaffold(
       body: Center(
         child: Padding(

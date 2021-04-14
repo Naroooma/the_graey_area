@@ -27,7 +27,6 @@ class _CategoryButtonState extends State<CategoryButton> {
           onTap: () {
             setState(() {
               _selection = !_selection;
-              print(_selection);
             });
           },
           highlightShape: BoxShape.circle,

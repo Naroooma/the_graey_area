@@ -93,9 +93,7 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                   child: CircularProgressIndicator(),
                 );
               }
-              print(snapshot.data.documents);
               List activeQuestions = snapshot.data.documents;
-              print(activeQuestions);
               return ListView.builder(
                 itemCount: activeQuestions.length,
                 itemBuilder: (context, i) => Column(
@@ -113,7 +111,8 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                         ),
                         onTap: () {
                           Navigator.pushNamed(
-                              context, ActiveChatsScreen.routeName);
+                              context, ActiveChatsScreen.routeName,
+                              arguments: activeQuestions[i]);
                         },
                       ),
                     ),

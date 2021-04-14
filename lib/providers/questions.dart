@@ -33,7 +33,7 @@ class Questions with ChangeNotifier {
     return false;
   }
 
-  Future<List> getQuestions() async {
+  Future<void> getQuestions() async {
     List allQuestions = [];
     try {
       QuerySnapshot questionsSnapshot =
@@ -52,7 +52,7 @@ class Questions with ChangeNotifier {
     this._allQuestions = allQuestions;
   }
 
-  List findMatchingQuestions(List favCategories) {
+  void findMatchingQuestions(List favCategories) {
     List matchQuestions = [];
     for (final question in _allQuestions) {
       for (final category in question.data['question_categories']) {

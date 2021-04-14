@@ -31,7 +31,6 @@ class _CategoryListButtonState extends State<CategoryListButton> {
               Provider.of<Categories>(context, listen: false)
                   .removeCategory(widget.catDoc['name']);
             }
-            print(widget._selection);
           });
         },
         child: Container(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/providers/questions.dart';
 import 'package:the_graey_area/providers/search.dart';
@@ -78,7 +77,6 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
 
   Widget _buildSearchResults() {
     _filter.addListener(() {
-      print(_filter.text);
       setState(() {
         query = _filter.text;
       });
@@ -140,7 +138,6 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(Provider.of<Search>(context, listen: true).query);
     _allQuestions =
         Provider.of<Questions>(context, listen: false).getAllQuestions;
     favCategories =
@@ -175,7 +172,6 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                   onTap: () {
                     setState(() {
                       _searchActive = !_searchActive;
-                      print(_searchActive);
                     });
                     // showSearch(
                     //     context: context,

@@ -8,8 +8,6 @@ import 'package:the_graey_area/widgets/reqAutoText.dart';
 
 import '../widgets/app_drawer.dart';
 
-import 'chat_screen.dart';
-
 class QuestionScreen extends StatefulWidget {
   static const routeName = '/question-screen';
 
