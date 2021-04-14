@@ -25,7 +25,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
   bool answered = false;
 
-  bool startSearch = false;
+  bool searching = false;
 
   var text = "Your Opinion";
 
@@ -146,7 +146,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                   text = "Talk to someone who Answered:";
                 } else {
                   // start search for partner
-                  startSearch = true;
+                  searching = true;
                 }
               });
             },
@@ -201,42 +201,12 @@ class _QuestionScreenState extends State<QuestionScreen> {
               SizedBox(
                 height: 40,
               ),
-              // if chat found, replace q page with chat page
-              // ? Column(
-              //   children: [
-              //     ReqAutoText(
-              //       "A Match Has Been Found!", _screenSize, 100),
-              //       TextButton(onPressed: () {
-              //         Navigator.of(context).pushReplacementNamed(
-              //     ChatScreen.routeName,
-              //     arguments: [question.data['text'], questionId, chatID]);
-              //       }, child: child)
-              //   ],
-              // )
-              Consumer<Partner>(
-                builder: (context, provider, child) {
-                  if (provider.chatID != null) {
-                    startSearch = false;
-                    Future.microtask(() {
-                      Navigator.of(context).pushReplacementNamed(
-                          ChatScreen.routeName,
-                          arguments: [
-                            question.data['text'],
-                            questionId,
-                            provider.chatID
-                          ]);
-                      provider.resetProvider();
-                    });
-                  }
-                  return child;
-                },
-                child: startSearch
-                    ? PartnerSearcher(questionId, userOpinion, partnerOpinion)
-                    : AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 500),
-                        transitionBuilder: slideAnimation,
-                        child: answerTile(_screenSize, questionId)),
-              ),
+              searching
+                  ? PartnerSearcher(questionId, userOpinion, partnerOpinion)
+                  : AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                      transitionBuilder: slideAnimation,
+                      child: answerTile(_screenSize, questionId)),
             ],
           ),
         ),

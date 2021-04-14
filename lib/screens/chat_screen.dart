@@ -36,15 +36,14 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final arguments = ModalRoute.of(context).settings.arguments as List;
-    final qText = arguments[0];
-    final qID = arguments[1];
-    final chatID = arguments[2];
+    final qID = arguments[0];
+    final chatID = arguments[1];
 
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Theme.of(context).accentColor,
-        title: Text(qText),
+        title: Text("Insert Question Text from database using ID"),
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
         ),
