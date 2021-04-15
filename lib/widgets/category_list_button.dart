@@ -19,17 +19,17 @@ class _CategoryListButtonState extends State<CategoryListButton> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: HexColor(widget.catDoc['color']).withOpacity(0.8),
+      color: HexColor(widget.catDoc.color).withOpacity(0.8),
       child: InkResponse(
         onTap: () {
           setState(() {
             widget._selection = !widget._selection;
             if (widget._selection == true) {
               Provider.of<Categories>(context, listen: false)
-                  .addCategory(widget.catDoc['name']);
+                  .addCategory(widget.catDoc.name);
             } else {
               Provider.of<Categories>(context, listen: false)
-                  .removeCategory(widget.catDoc['name']);
+                  .removeCategory(widget.catDoc.name);
             }
           });
         },
@@ -45,7 +45,7 @@ class _CategoryListButtonState extends State<CategoryListButton> {
             child: FittedBox(
               fit: BoxFit.fitWidth,
               child: Text(
-                widget.catDoc['name'],
+                widget.catDoc.name,
                 style: TextStyle(
                   color: Theme.of(context).accentColor,
                   fontFamily: "PT_Serif",
