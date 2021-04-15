@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:the_graey_area/models/category.dart';
 import 'dart:async';
 
-import 'providers/categories.dart';
+import 'models/question.dart';
 
 class DatabaseService {
   // users, questions, categories, references
@@ -37,6 +37,17 @@ class DatabaseService {
   Stream<List<dynamic>> favCategories(String uid) {
     return usersCollection.document(uid).snapshots().map((doc) {
       return doc.data['fav_categories'];
+    });
+  }
+
+  Stream<List<Question>> get allQuestions {
+    return questionsCollection.snapshots().map((list) {
+      return list.documents
+          .map((doc) => Question(
+              questionCategories: doc.data['question_categories'],
+              text: doc.data['text'],
+              id: doc.documentID))
+          .toList();
     });
   }
 }

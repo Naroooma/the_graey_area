@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:the_graey_area/models/question.dart';
 import 'package:the_graey_area/providers/partner.dart';
 import 'package:the_graey_area/widgets/partner_searcher.dart';
 import 'package:the_graey_area/widgets/reqAutoText.dart';
@@ -156,9 +157,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final question =
-        ModalRoute.of(context).settings.arguments as DocumentSnapshot;
-    final questionId = question.documentID;
+    final question = ModalRoute.of(context).settings.arguments as Question;
+    final questionId = question.id;
     var _screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -194,8 +194,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
           padding: EdgeInsets.all(_screenSize.width / 15),
           child: Column(
             children: [
-              ReqAutoText(
-                  question.data['text'], _screenSize, _screenSize.height / 3),
+              ReqAutoText(question.text, _screenSize, _screenSize.height / 3),
               SizedBox(
                 height: 40,
               ),

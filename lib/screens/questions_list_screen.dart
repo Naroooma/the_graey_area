@@ -2,13 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/category.dart';
+import 'package:the_graey_area/models/question.dart';
 import 'package:the_graey_area/providers/questions.dart';
-import 'package:the_graey_area/providers/search.dart';
 import 'package:the_graey_area/widgets/app_drawer.dart';
 
 import '../database.dart';
 import '../widgets/question_tile.dart';
-import '../providers/categories.dart';
 import 'questions_chats_screen.dart';
 
 class QuestionsListScreen extends StatefulWidget {
@@ -21,10 +20,10 @@ class QuestionsListScreen extends StatefulWidget {
 }
 
 class _QuestionsListScreenState extends State<QuestionsListScreen> {
-  List<dynamic> _allQuestions = [];
+  List<dynamic> allQuestions = [];
   List<dynamic> favCategories = [];
   List<dynamic> allCategories = [];
-  List<dynamic> _matchQuestions = [];
+  List<dynamic> matchQuestions = [];
 
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool _force = false;
@@ -86,9 +85,9 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     });
     List<dynamic> suggestionList = [];
     query.isEmpty
-        ? suggestionList = _matchQuestions
+        ? suggestionList = matchQuestions
         : suggestionList.addAll(
-            _allQuestions.where((question) {
+            allQuestions.where((question) {
               return question['text']
                   .toLowerCase()
                   .contains(query.toLowerCase());
@@ -106,43 +105,24 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     );
   }
 
-  Future<void> getData(favCategories) async {
-    // if at least one of the providers are empty or force => fetchData
-    if (Provider.of<Questions>(context, listen: false).isEmpty() || _force) {
-      await fetchData(favCategories);
-      _force = false;
-    } else {
-      // if providers are not empty => put provider data into local variables
-      _allQuestions =
-          Provider.of<Questions>(context, listen: false).getAllQuestions;
-      _matchQuestions =
-          Provider.of<Questions>(context, listen: false).getMatchQuestions;
-    }
-  }
-
-  Future<void> fetchData(favCategories) async {
-    _allQuestions =
-        await Provider.of<Questions>(context, listen: false).allQuestions();
-    _matchQuestions = Provider.of<Questions>(context, listen: false)
-        .matchQuestions(favCategories);
-
-    _force = false;
-  }
-
   @override
   Widget build(BuildContext context) {
     FirebaseUser user = Provider.of<FirebaseUser>(context);
-    _allQuestions =
-        Provider.of<Questions>(context, listen: false).getAllQuestions;
+
+    allQuestions = Provider.of<List<Question>>(context);
     allCategories = Provider.of<List<Category>>(context);
-    _matchQuestions =
-        Provider.of<Questions>(context, listen: false).getMatchQuestions;
 
     var _screenSize = MediaQuery.of(context).size;
 
-    return StreamBuilder<Object>(
+    return StreamBuilder<List<dynamic>>(
         stream: Provider.of<DatabaseService>(context).favCategories(user.uid),
         builder: (context, favCategories) {
+          if (favCategories.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          }
+          matchQuestions = Provider.of<Questions>(context, listen: false)
+              .matchQuestions(favCategories.data, allQuestions);
+
           return Scaffold(
             appBar: _searchActive
                 ? buildSearchBar()
@@ -198,34 +178,14 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                 });
               }, // don't call getData because of FutureBuilder
               child: Center(
-                  child: Provider.of<Questions>(context, listen: false)
-                              .isEmpty() ||
-                          _force
-                      ? FutureBuilder(
-                          // gets all the questions
-                          future: fetchData(favCategories.data),
-                          builder: (_, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return CircularProgressIndicator();
-                            } else {
-                              return ListView.builder(
-                                  itemCount: _matchQuestions.length,
-                                  itemBuilder: (ctx, index) {
-                                    return QuestionTile(
-                                        _matchQuestions[index], allCategories);
-                                  });
-                            }
-                          },
-                        )
-                      : _searchActive
-                          ? _buildSearchResults()
-                          : ListView.builder(
-                              itemCount: _matchQuestions.length,
-                              itemBuilder: (ctx, index) {
-                                return QuestionTile(
-                                    _matchQuestions[index], allCategories);
-                              })),
+                  child: _searchActive
+                      ? _buildSearchResults()
+                      : ListView.builder(
+                          itemCount: matchQuestions.length,
+                          itemBuilder: (ctx, index) {
+                            return QuestionTile(
+                                matchQuestions[index], allCategories);
+                          })),
             ),
             floatingActionButton: FloatingActionButton(
               backgroundColor: Theme.of(context).primaryColor,

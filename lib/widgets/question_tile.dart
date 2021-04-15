@@ -6,7 +6,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:the_graey_area/screens/question_screen.dart';
 
 class QuestionTile extends StatelessWidget {
-  final DocumentSnapshot _question;
+  final _question;
   final List allCategories;
 
   QuestionTile(this._question, this.allCategories);
@@ -36,7 +36,7 @@ class QuestionTile extends StatelessWidget {
               padding: EdgeInsets.all(12),
               alignment: Alignment.center,
               child: AutoSizeText(
-                _question.data['text'],
+                _question.text,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
@@ -51,16 +51,16 @@ class QuestionTile extends StatelessWidget {
               child: Wrap(
                   spacing: 20,
                   children: List<Widget>.generate(
-                    _question.data['question_categories'].length,
+                    _question.questionCategories.length,
                     (int index) {
                       return Chip(
                         backgroundColor: correspondingColor(allCategories,
-                                _question.data['question_categories'][index])
+                                _question.questionCategories[index])
                             .withOpacity(0.8),
                         labelStyle:
                             TextStyle(color: Theme.of(context).primaryColor),
                         label: Text(
-                          _question.data['question_categories'][index],
+                          _question.questionCategories[index],
                         ),
                       );
                     },
