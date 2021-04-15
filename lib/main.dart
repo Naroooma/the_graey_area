@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:the_graey_area/database.dart';
 import 'package:the_graey_area/home.dart';
+import 'package:the_graey_area/models/category.dart';
 import 'package:the_graey_area/providers/questions.dart';
 import 'package:the_graey_area/screens/active_chats_screen.dart';
 import 'package:the_graey_area/screens/chat_screen.dart';
@@ -29,27 +31,19 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
 
-  Future<bool> catChosen() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    try {
-      DocumentSnapshot favCategories =
-          await Firestore.instance.collection('users').document(user.uid).get();
-      if (favCategories['fav_categories'] == null) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (exception) {
-      print("ERROR");
-      print(exception);
-    }
-    return false;
-  }
+  // start all streams when authenticated
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        StreamProvider<List<Category>>.value(
+            value: DatabaseService().allCategories),
+        Provider<DatabaseService>.value(
+          value: DatabaseService(),
+        ),
+        StreamProvider<FirebaseUser>.value(
+            value: FirebaseAuth.instance.onAuthStateChanged),
         ChangeNotifierProvider<Categories>(
           create: (_) => Categories(),
         ),
@@ -89,44 +83,8 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
         ),
-        home: StreamBuilder(
-          stream: FirebaseAuth
-              .instance.onAuthStateChanged, // when the auth has changed
-          builder: (ctx, userSnapshot) {
-            if (userSnapshot.hasData && (!userSnapshot.data.isAnonymous)) {
-              return FutureBuilder(
-                  future: catChosen(),
-                  builder: (ctx, futuresnapshot) {
-                    // need to log out because token persists, but provider does not
-                    //Provider.of<Auth>(ctx).signout();
-
-                    //final isNewUser =
-                    //    userSnapshot.data.metadata.lastSignInTime ==
-                    //        userSnapshot.data.metadata.creationTime;
-                    //final isNewUser = Provider.of<Auth>(ctx).isNewUser;
-                    if (futuresnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return Scaffold(
-                        backgroundColor: Colors.grey[800],
-                        body: Center(child: CircularProgressIndicator()),
-                      );
-                    } else {
-                      print(futuresnapshot.data);
-                      if (futuresnapshot.data == null ||
-                          futuresnapshot.data == true) {
-                        return CategoryPickerScreen();
-                      } else {
-                        return QuestionsChatsScreen();
-                      }
-                    }
-                  });
-            } else {
-              return AuthScreen();
-            }
-          },
-        ),
+        home: Home(),
         routes: {
-          Home.routeName: (ctx) => Home(),
           QuestionsChatsScreen.routeName: (ctx) => QuestionsChatsScreen(),
           QuestionsListScreen.routeName: (ctx) => QuestionsListScreen(),
           ActiveChatsScreen.routeName: (ctx) => ActiveChatsScreen(),

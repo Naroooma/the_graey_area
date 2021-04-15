@@ -27,7 +27,7 @@ class Questions with ChangeNotifier {
   }
 
   bool isEmpty() {
-    if (_allQuestions.isEmpty && this._matchQuestions.isEmpty) {
+    if (_allQuestions.isEmpty || this._matchQuestions.isEmpty) {
       return true;
     }
     return false;

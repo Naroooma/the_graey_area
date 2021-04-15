@@ -13,9 +13,9 @@ class QuestionTile extends StatelessWidget {
 
   Color correspondingColor(List<dynamic> _allCategories, String categoryName) {
     var color;
-    var matched = _allCategories.where((item) => item['name'] == categoryName);
+    var matched = _allCategories.where((item) => item.name == categoryName);
     matched.forEach((item) {
-      color = HexColor(item['color']);
+      color = HexColor(item.color);
     });
     return color;
   }

@@ -6,88 +6,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Categories with ChangeNotifier {
+  // start _favCategories to be equal to firebase favCategories
   List _favCategories = [];
-  List _allCategories = [];
   bool catExist = false;
-
-  Future<List> favCategories() async {
-    await fetchFavoriteCategories();
-    this.catExist = true;
-    return [..._favCategories];
-  }
-
-  Future<List> allCategories() async {
-    await fetchAllCategories();
-    return [..._allCategories];
-  }
 
   get getFavCategories {
     return [..._favCategories];
   }
 
-  get getAllCategories {
-    return [..._allCategories];
-  }
-
-  bool isEmpty() {
-    if (_favCategories.isEmpty && _allCategories.isEmpty) {
-      return true;
-    }
-    return false;
-  }
-
   void reset() {
     _favCategories = [];
-    _allCategories = [];
   }
 
-  Future<void> fetchAllCategories() async {
-    try {
-      QuerySnapshot categoriesSnapshot =
-          await Firestore.instance.collection('categories').getDocuments();
-
-      categoriesSnapshot.documents.forEach((doc) => {
-            if (!_allCategories.contains(doc.data))
-              {
-                _allCategories.add(doc.data),
-              }
-          });
-    } catch (exception) {
-      print("ERROR");
-      print(exception);
-    }
-
-    // removes duplicates using json
-    _allCategories = _allCategories
-        .map((item) => jsonEncode(item))
-        .toSet()
-        .map((item) => jsonDecode(item))
-        .toList();
-  }
-
-  Future<void> fetchFavoriteCategories() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    try {
-      DocumentSnapshot favCategories =
-          await Firestore.instance.collection('users').document(user.uid).get();
-
-      favCategories['fav_categories'].forEach((cat) => {
-            if (!_favCategories.contains(cat))
-              {
-                _favCategories.add(cat),
-              }
-          });
-    } catch (exception) {
-      print("ERROR");
-      print(exception);
-    }
-
-    // removes duplicates using json
-    // _favCategories = _favCategories
-    //     .map((item) => jsonEncode(item))
-    //     .toSet()
-    //     .map((item) => jsonDecode(item))
-    //     .toList();
+  void initCategory(List init) {
+    this._favCategories = init;
   }
 
   void addCategory(var value) {

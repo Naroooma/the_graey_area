@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:the_graey_area/models/category.dart';
 import 'package:the_graey_area/providers/questions.dart';
 import 'package:the_graey_area/providers/search.dart';
 import 'package:the_graey_area/widgets/app_drawer.dart';
 
+import '../database.dart';
 import '../widgets/question_tile.dart';
 import '../providers/categories.dart';
 import 'questions_chats_screen.dart';
@@ -103,19 +106,13 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     );
   }
 
-  Future<void> getData() async {
+  Future<void> getData(favCategories) async {
     // if at least one of the providers are empty or force => fetchData
-    if (Provider.of<Questions>(context, listen: false).isEmpty() ||
-        Provider.of<Categories>(context, listen: false).isEmpty() ||
-        _force) {
-      await fetchData();
+    if (Provider.of<Questions>(context, listen: false).isEmpty() || _force) {
+      await fetchData(favCategories);
       _force = false;
     } else {
       // if providers are not empty => put provider data into local variables
-      favCategories =
-          Provider.of<Categories>(context, listen: false).getFavCategories;
-      allCategories =
-          Provider.of<Categories>(context, listen: false).getAllCategories;
       _allQuestions =
           Provider.of<Questions>(context, listen: false).getAllQuestions;
       _matchQuestions =
@@ -123,11 +120,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     }
   }
 
-  Future<void> fetchData() async {
-    favCategories =
-        await Provider.of<Categories>(context, listen: false).favCategories();
-    allCategories =
-        await Provider.of<Categories>(context, listen: false).allCategories();
+  Future<void> fetchData(favCategories) async {
     _allQuestions =
         await Provider.of<Questions>(context, listen: false).allQuestions();
     _matchQuestions = Provider.of<Questions>(context, listen: false)
@@ -138,110 +131,113 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseUser user = Provider.of<FirebaseUser>(context);
     _allQuestions =
         Provider.of<Questions>(context, listen: false).getAllQuestions;
-    favCategories =
-        Provider.of<Categories>(context, listen: false).getFavCategories;
-    allCategories =
-        Provider.of<Categories>(context, listen: false).getAllCategories;
+    allCategories = Provider.of<List<Category>>(context);
     _matchQuestions =
         Provider.of<Questions>(context, listen: false).getMatchQuestions;
 
     var _screenSize = MediaQuery.of(context).size;
 
-    return Scaffold(
-      appBar: _searchActive
-          ? buildSearchBar()
-          : AppBar(
-              automaticallyImplyLeading: false,
-              title: Text(
-                "Questions",
-                style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontFamily: 'PT_Serif'),
-              ),
-              backgroundColor: Colors.grey[300],
-              iconTheme: IconThemeData(
-                color: Theme.of(context).primaryColor,
-              ),
-              actions: [
-                SizedBox(
-                  width: _screenSize.width / 20,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _searchActive = !_searchActive;
-                    });
-                    // showSearch(
-                    //     context: context,
-                    //     delegate:
-                    //         Search(_allQuestions, _matchQuestions, allCategories));
-                  },
-                  child: Icon(Icons.search, size: 30),
-                ),
-                SizedBox(
-                  width: _screenSize.width / 20,
-                ),
-                GestureDetector(
-                  child:
-                      Icon(Icons.menu, size: 30), // change this size and style
-                  onTap: () => _scaffoldKey.currentState.openEndDrawer(),
-                ),
-                SizedBox(
-                  width: _screenSize.width / 20,
-                ),
-              ],
+    return StreamBuilder<Object>(
+        stream: Provider.of<DatabaseService>(context).favCategories(user.uid),
+        builder: (context, favCategories) {
+          return Scaffold(
+            appBar: _searchActive
+                ? buildSearchBar()
+                : AppBar(
+                    automaticallyImplyLeading: false,
+                    title: Text(
+                      "Questions",
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontFamily: 'PT_Serif'),
+                    ),
+                    backgroundColor: Colors.grey[300],
+                    iconTheme: IconThemeData(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    actions: [
+                      SizedBox(
+                        width: _screenSize.width / 20,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _searchActive = !_searchActive;
+                          });
+                          // showSearch(
+                          //     context: context,
+                          //     delegate:
+                          //         Search(_allQuestions, _matchQuestions, allCategories));
+                        },
+                        child: Icon(Icons.search, size: 30),
+                      ),
+                      SizedBox(
+                        width: _screenSize.width / 20,
+                      ),
+                      GestureDetector(
+                        child: Icon(Icons.menu,
+                            size: 30), // change this size and style
+                        onTap: () => _scaffoldKey.currentState.openEndDrawer(),
+                      ),
+                      SizedBox(
+                        width: _screenSize.width / 20,
+                      ),
+                    ],
+                  ),
+            endDrawer: AppDrawer(context),
+            key: _scaffoldKey,
+            backgroundColor: Theme.of(context).primaryColor,
+            body: RefreshIndicator(
+              backgroundColor: Theme.of(context).primaryColor,
+              onRefresh: () async {
+                setState(() {
+                  _force = true;
+                });
+              }, // don't call getData because of FutureBuilder
+              child: Center(
+                  child: Provider.of<Questions>(context, listen: false)
+                              .isEmpty() ||
+                          _force
+                      ? FutureBuilder(
+                          // gets all the questions
+                          future: fetchData(favCategories.data),
+                          builder: (_, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return CircularProgressIndicator();
+                            } else {
+                              return ListView.builder(
+                                  itemCount: _matchQuestions.length,
+                                  itemBuilder: (ctx, index) {
+                                    return QuestionTile(
+                                        _matchQuestions[index], allCategories);
+                                  });
+                            }
+                          },
+                        )
+                      : _searchActive
+                          ? _buildSearchResults()
+                          : ListView.builder(
+                              itemCount: _matchQuestions.length,
+                              itemBuilder: (ctx, index) {
+                                return QuestionTile(
+                                    _matchQuestions[index], allCategories);
+                              })),
             ),
-      endDrawer: AppDrawer(context),
-      key: _scaffoldKey,
-      backgroundColor: Theme.of(context).primaryColor,
-      body: RefreshIndicator(
-        backgroundColor: Theme.of(context).primaryColor,
-        onRefresh: () async {
-          setState(() {
-            _force = true;
-          });
-        }, // don't call getData because of FutureBuilder
-        child: Center(
-            child: Provider.of<Questions>(context, listen: false).isEmpty() ||
-                    Provider.of<Categories>(context, listen: false).isEmpty() ||
-                    _force
-                ? FutureBuilder(
-                    // gets all the questions
-                    future: fetchData(),
-                    builder: (_, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      } else {
-                        return ListView.builder(
-                            itemCount: _matchQuestions.length,
-                            itemBuilder: (ctx, index) {
-                              return QuestionTile(
-                                  _matchQuestions[index], allCategories);
-                            });
-                      }
-                    },
-                  )
-                : _searchActive
-                    ? _buildSearchResults()
-                    : ListView.builder(
-                        itemCount: _matchQuestions.length,
-                        itemBuilder: (ctx, index) {
-                          return QuestionTile(
-                              _matchQuestions[index], allCategories);
-                        })),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).primaryColor,
-        child: Icon(
-          Icons.message,
-          color: Theme.of(context).accentColor,
-        ),
-        onPressed: () => Navigator.pushReplacementNamed(
-            context, QuestionsChatsScreen.routeName),
-      ),
-    );
+            floatingActionButton: FloatingActionButton(
+              backgroundColor: Theme.of(context).primaryColor,
+              child: Icon(
+                Icons.message,
+                color: Theme.of(context).accentColor,
+              ),
+              onPressed: () => Navigator.pushReplacementNamed(
+                  context, QuestionsChatsScreen.routeName),
+            ),
+          );
+        });
   }
 }
 
