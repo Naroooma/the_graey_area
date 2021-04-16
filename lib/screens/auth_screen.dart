@@ -31,6 +31,7 @@ class _AuthScreenState extends State<AuthScreen> {
             _userPassword.trim(),
           );
         } else {
+          await auth.checkUsername(_userName);
           await auth.emailSignup(
             _userEmail.trim(),
             _userPassword.trim(),

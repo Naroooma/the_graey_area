@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:the_graey_area/models/category.dart';
 import 'dart:async';
 
+import 'models/active_question.dart';
 import 'models/question.dart';
 
 class DatabaseService {
@@ -12,6 +13,8 @@ class DatabaseService {
       Firestore.instance.collection('questions');
   final CollectionReference categoriesCollection =
       Firestore.instance.collection('categories');
+  final CollectionReference userNamesCollection =
+      Firestore.instance.collection('userNames');
 
   // void allCateogiresData() {
   //   StreamSubscription allCategoriesListener;
@@ -49,5 +52,50 @@ class DatabaseService {
               id: doc.documentID))
           .toList();
     });
+  }
+
+  Stream<List<ActiveQuestion>> activeQuestions(String uid) {
+    return usersCollection
+        .document(uid)
+        .collection('active_questions')
+        .snapshots()
+        .map((list) {
+      return list.documents
+          .map((doc) => ActiveQuestion(
+              activeChats: doc.data['active_chats'], id: doc.documentID))
+          .toList();
+    });
+  }
+
+  Future<String> partnerUsername(
+      String chatID, String qID, String userID) async {
+    // get all users with corresponding id
+    QuerySnapshot users = await userNamesCollection.getDocuments();
+    for (var i in users.documents) {
+      print(i.data['id']);
+    }
+
+    var partnerID = '';
+
+    // find partnerID by going into chat
+    //
+    var chat = await Firestore.instance
+        .collection('questions')
+        .document(qID)
+        .collection('chats')
+        .document(chatID)
+        .get();
+
+    if (chat.data['user1_id'] != userID) {
+      partnerID = chat.data['user1_id'];
+    } else {
+      partnerID = chat.data['user2_id'];
+    }
+
+    var partner = users.documents
+        .where((element) => element.data['id'] == partnerID)
+        .toList();
+    print(partner);
+    return partner[0].documentID;
   }
 }

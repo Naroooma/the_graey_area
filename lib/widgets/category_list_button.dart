@@ -27,6 +27,8 @@ class _CategoryListButtonState extends State<CategoryListButton> {
             if (widget._selection == true) {
               Provider.of<Categories>(context, listen: false)
                   .addCategory(widget.catDoc.name);
+              print(Provider.of<Categories>(context, listen: false)
+                  .getFavCategories);
             } else {
               Provider.of<Categories>(context, listen: false)
                   .removeCategory(widget.catDoc.name);

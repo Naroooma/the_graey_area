@@ -36,15 +36,16 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<DatabaseService>.value(
+          value: DatabaseService(),
+        ),
         StreamProvider<List<Category>>.value(
             value: DatabaseService().allCategories),
         StreamProvider<List<Question>>.value(
             value: DatabaseService().allQuestions),
-        Provider<DatabaseService>.value(
-          value: DatabaseService(),
-        ),
         StreamProvider<FirebaseUser>.value(
-            value: FirebaseAuth.instance.onAuthStateChanged),
+          value: FirebaseAuth.instance.onAuthStateChanged,
+        ),
         ChangeNotifierProvider<Categories>(
           create: (_) => Categories(),
         ),

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +14,8 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseUser user = Provider.of<FirebaseUser>(context);
+
     return Container(
       width: MediaQuery.of(context).size.width * 0.6,
       child: Drawer(
@@ -38,7 +41,11 @@ class AppDrawer extends StatelessWidget {
                         Navigator.popUntil(context, ModalRoute.withName("/"));
                         Provider.of<Categories>(ctx, listen: false)
                             .reset(); // resets fav categories
-                        Provider.of<Auth>(ctx, listen: false).signout();
+                        try {
+                          FirebaseAuth.instance.signOut();
+                        } catch (a) {
+                          print('Sign Out Error');
+                        }
                       },
                       child: ListTile(
                         leading: Icon(Icons.logout),
