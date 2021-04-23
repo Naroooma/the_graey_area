@@ -60,9 +60,7 @@ class DatabaseService {
         .collection('active_questions')
         .snapshots()
         .map((list) {
-      return list.documents
-          .where((doc) => doc.data['active_chats'] != null)
-          .map((doc) {
+      return list.documents.map((doc) {
         return ActiveQuestion(
             activeChats: doc.data['active_chats'], id: doc.documentID);
       }).toList();

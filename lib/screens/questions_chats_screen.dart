@@ -94,7 +94,9 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                     child: CircularProgressIndicator(),
                   );
                 }
-                List activeQuestions = snapshot.data;
+                List<ActiveQuestion> activeQuestions = snapshot.data
+                    .where((doc) => doc.activeChats != null)
+                    .toList();
                 return ListView.builder(
                   itemCount: activeQuestions.length,
                   itemBuilder: (context, i) => Column(
