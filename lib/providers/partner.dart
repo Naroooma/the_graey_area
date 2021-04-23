@@ -83,6 +83,10 @@ class Partner with ChangeNotifier {
     notifyChatNotFound();
 
     // if no match found, setup stream listner that waits for flag
+    openPartnerStream();
+  }
+
+  void openPartnerStream() {
     StreamSubscription foundListener;
     Stream<DocumentSnapshot> waitingSnapshot = Firestore.instance
         .collection('questions')
@@ -93,8 +97,6 @@ class Partner with ChangeNotifier {
 
     foundListener = waitingSnapshot.listen((document) async {
       // when flaged, delete my waiting_room + stop stream
-      String flag = document.data['chat'];
-      print(flag);
       if (document.data != null && document.data['chat'] != null) {
         print("Chat Found At:");
         print(document.data['chat']);

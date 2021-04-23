@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/active_question.dart';
 import 'package:the_graey_area/models/question.dart';
+import 'package:the_graey_area/providers/partner.dart';
 import 'package:the_graey_area/screens/active_chats_screen.dart';
 import 'package:the_graey_area/screens/questions_list_screen.dart';
 import 'package:the_graey_area/widgets/app_drawer.dart';
@@ -94,9 +95,25 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                     child: CircularProgressIndicator(),
                   );
                 }
+                for (var i in snapshot.data) {
+                  print(i.id);
+                }
                 List<ActiveQuestion> activeQuestions = snapshot.data
                     .where((doc) => doc.activeChats != null)
                     .toList();
+
+                List<ActiveQuestion> unpartneredQuestions = snapshot.data
+                    .where((doc) => doc.activeChats == null)
+                    .toList();
+                // open stream for all unpartneredquestions
+                Provider.of<Partner>(context, listen: false)
+                    .setUserID(user.uid);
+                for (var unpartneredQ in unpartneredQuestions) {
+                  Provider.of<Partner>(context, listen: false).qID =
+                      unpartneredQ.id;
+                  Provider.of<Partner>(context, listen: false)
+                      .openPartnerStream();
+                }
                 return ListView.builder(
                   itemCount: activeQuestions.length,
                   itemBuilder: (context, i) => Column(

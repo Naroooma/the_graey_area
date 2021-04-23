@@ -29,6 +29,7 @@ class DatabaseService {
   //
 
   Stream<List<Category>> get allCategories {
+    print('ALL CATEGORIES STREAM');
     return categoriesCollection.snapshots().map((list) {
       return list.documents
           .map((doc) =>
@@ -38,12 +39,14 @@ class DatabaseService {
   }
 
   Stream<List<dynamic>> favCategories(String uid) {
+    print('FAV CATEGORIES STREAM');
     return usersCollection.document(uid).snapshots().map((doc) {
       return doc.data['fav_categories'];
     });
   }
 
   Stream<List<Question>> get allQuestions {
+    print('ALL QUESTIONS STREAM');
     return questionsCollection.snapshots().map((list) {
       return list.documents
           .map((doc) => Question(
@@ -55,6 +58,7 @@ class DatabaseService {
   }
 
   Stream<List<ActiveQuestion>> activeQuestions(String uid) {
+    print('ACTIVE QUESTIONS STREAM');
     return usersCollection
         .document(uid)
         .collection('active_questions')
@@ -71,9 +75,6 @@ class DatabaseService {
       String chatID, String qID, String userID) async {
     // get all users with corresponding id
     QuerySnapshot users = await userNamesCollection.getDocuments();
-    for (var i in users.documents) {
-      print(i.data['id']);
-    }
 
     var partnerID = '';
 
