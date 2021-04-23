@@ -31,10 +31,10 @@ dependencies:
   cloud_firestore: ^0.13.5
   firebase_auth: ^0.16.0
   firebase_storage: ^3.1.5
-  firebase_messaging: ^6.0.13
   hexcolor: ^1.0.6
   provider: ^4.3.2+3
   auto_size_text: ^2.1.0
+  firebase_messaging: ^6.0.16
 
 dev_dependencies:
   flutter_test:

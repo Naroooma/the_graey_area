@@ -29,7 +29,6 @@ class DatabaseService {
   //
 
   Stream<List<Category>> get allCategories {
-    print('ALL CATEGORIES STREAM');
     return categoriesCollection.snapshots().map((list) {
       return list.documents
           .map((doc) =>
@@ -39,14 +38,12 @@ class DatabaseService {
   }
 
   Stream<List<dynamic>> favCategories(String uid) {
-    print('FAV CATEGORIES STREAM');
     return usersCollection.document(uid).snapshots().map((doc) {
       return doc.data['fav_categories'];
     });
   }
 
   Stream<List<Question>> get allQuestions {
-    print('ALL QUESTIONS STREAM');
     return questionsCollection.snapshots().map((list) {
       return list.documents
           .map((doc) => Question(
@@ -58,7 +55,6 @@ class DatabaseService {
   }
 
   Stream<List<ActiveQuestion>> activeQuestions(String uid) {
-    print('ACTIVE QUESTIONS STREAM');
     return usersCollection
         .document(uid)
         .collection('active_questions')
@@ -99,4 +95,77 @@ class DatabaseService {
     print(partner);
     return partner[0].documentID;
   }
+
+  // send message
+  void newMessage(String qid, String cid, String uid) {
+    questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .updateData({
+      "messageCount": FieldValue.increment(1),
+      "${uid}messageCount": FieldValue.increment(1),
+    });
+  }
+
+  // read messages
+  void readMessage(String qid, String cid, String uid) async {
+    QuerySnapshot messagesSnapshot = await questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .collection('messages')
+        .getDocuments();
+    questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .updateData({
+      "${uid}messageCount": messagesSnapshot.documents.length,
+    });
+  }
+
+  // unread messages counter
+  Future<void> unreadMessageCounter(String qid, String cid, String uid) async {
+    DocumentSnapshot messagesSnapshot = await questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .get();
+    int mcount = messagesSnapshot.data["messageCount"];
+    int m1count = messagesSnapshot.data["${uid}messageCount"] == null
+        ? 0
+        : messagesSnapshot.data["${uid}messageCount"];
+    return mcount - m1count;
+  }
+
+  // stream for all active questions that shows changes
+
+  // stream that checks for new messages, and returns counter.
+  // int newMessageCounter(String uid, String qid, String cid) {
+  //   // get time of last check
+
+  //   StreamSubscription chatListener;
+  //   Stream<QuerySnapshot> chatSnapshot = questionsCollection
+  //       .document(qid)
+  //       .collection('chats')
+  //       .document(cid)
+  //       .collection('messages')
+  //       .snapshots();
+
+  //   chatListener = chatSnapshot.listen((collection) {
+
+  //     collection.map((list) {
+  //     return list.documents.map((doc) {
+  //       return ActiveQuestion(
+  //           activeChats: doc.data['active_chats'], id: doc.documentID);
+  //     }).toList();
+  //   });
+  //   });
+  // }
+
+  // check if user half answered specific question, if so return first answer
+
+  // check if searching for partner in specific question
+
 }

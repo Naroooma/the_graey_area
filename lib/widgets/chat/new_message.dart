@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:the_graey_area/database.dart';
 
 class NewMessage extends StatefulWidget {
   final qID;
@@ -15,7 +17,7 @@ class _NewMessageState extends State<NewMessage> {
   final _controller = new TextEditingController();
   var _enteredMessage = '';
 
-  void _sendMessage() async {
+  void _sendMessage(uid) async {
     FocusScope.of(context).unfocus();
     final user = await FirebaseAuth.instance.currentUser();
     final userData =
@@ -33,10 +35,13 @@ class _NewMessageState extends State<NewMessage> {
       'username': userData['username'],
     });
     _controller.clear();
+
+    DatabaseService().newMessage(widget.qID, widget.chatID, uid);
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<FirebaseUser>(context);
     return Container(
       color: Theme.of(context).accentColor,
       margin: EdgeInsets.only(top: 8),
@@ -62,7 +67,9 @@ class _NewMessageState extends State<NewMessage> {
             icon: Icon(
               Icons.send,
             ),
-            onPressed: _enteredMessage.trim().isEmpty ? null : _sendMessage,
+            onPressed: _enteredMessage.trim().isEmpty
+                ? null
+                : () => _sendMessage(user.uid),
           )
         ],
       ),
