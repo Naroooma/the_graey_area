@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/category.dart';
 import 'package:the_graey_area/models/question.dart';
 import 'package:the_graey_area/providers/questions.dart';
+import 'package:the_graey_area/providers/search.dart';
 import 'package:the_graey_area/widgets/app_drawer.dart';
 
 import '../database.dart';
@@ -107,6 +108,8 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(Provider.of<Search>(context, listen: true).query);
+
     FirebaseUser user = Provider.of<FirebaseUser>(context);
 
     allQuestions = Provider.of<List<Question>>(context);
