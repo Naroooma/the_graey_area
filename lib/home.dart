@@ -6,11 +6,6 @@ import 'package:the_graey_area/screens/auth_screen.dart';
 import 'package:the_graey_area/screens/category_picker_screen.dart';
 import 'package:the_graey_area/screens/questions_chats_screen.dart';
 
-import 'database.dart';
-import 'models/category.dart';
-import 'models/question.dart';
-import 'providers/auth.dart';
-
 class Home extends StatelessWidget {
   Future<bool> catChosen() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
