@@ -63,8 +63,6 @@ class DatabaseService {
       return list.documents
           .where((doc) => doc.data['active_chats'] != null)
           .map((doc) {
-        print(doc.data['active_chats']);
-
         return ActiveQuestion(
             activeChats: doc.data['active_chats'], id: doc.documentID);
       }).toList();

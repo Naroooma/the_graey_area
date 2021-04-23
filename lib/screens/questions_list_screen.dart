@@ -117,91 +117,117 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     // if user has logged out, close stream
     return user == null || user.uid == null
         ? CircularProgressIndicator()
-        : StreamBuilder<List<dynamic>>(
+        : StreamBuilder<Object>(
             stream:
-                Provider.of<DatabaseService>(context).favCategories(user.uid),
-            builder: (context, favCategories) {
-              if (favCategories.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+                Provider.of<DatabaseService>(context).activeQuestions(user.uid),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
               }
-              matchQuestions = Provider.of<Questions>(context, listen: false)
-                  .matchQuestions(favCategories.data, allQuestions);
+              List activeQuestions = snapshot.data;
+              for (var i in activeQuestions) {
+                print(i.id);
+              }
+              print('aaaa');
+              allQuestions = allQuestions
+                  .where((doc) =>
+                      !activeQuestions.any((element) => element.id == doc.id))
+                  .toList();
+              for (var i in allQuestions) {
+                print(i.id);
+              }
+              return StreamBuilder<List<dynamic>>(
+                  stream: Provider.of<DatabaseService>(context)
+                      .favCategories(user.uid),
+                  builder: (context, favCategories) {
+                    if (favCategories.connectionState ==
+                        ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+                    matchQuestions =
+                        Provider.of<Questions>(context, listen: false)
+                            .matchQuestions(favCategories.data, allQuestions);
 
-              return Scaffold(
-                appBar: _searchActive
-                    ? buildSearchBar()
-                    : AppBar(
-                        automaticallyImplyLeading: false,
-                        title: Text(
-                          "Questions",
-                          style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontFamily: 'PT_Serif'),
+                    return Scaffold(
+                      appBar: _searchActive
+                          ? buildSearchBar()
+                          : AppBar(
+                              automaticallyImplyLeading: false,
+                              title: Text(
+                                "Questions",
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontFamily: 'PT_Serif'),
+                              ),
+                              backgroundColor: Colors.grey[300],
+                              iconTheme: IconThemeData(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              actions: [
+                                SizedBox(
+                                  width: _screenSize.width / 20,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _searchActive = !_searchActive;
+                                    });
+                                    // showSearch(
+                                    //     context: context,
+                                    //     delegate:
+                                    //         Search(_allQuestions, _matchQuestions, allCategories));
+                                  },
+                                  child: Icon(Icons.search, size: 30),
+                                ),
+                                SizedBox(
+                                  width: _screenSize.width / 20,
+                                ),
+                                GestureDetector(
+                                  child: Icon(Icons.menu,
+                                      size: 30), // change this size and style
+                                  onTap: () =>
+                                      _scaffoldKey.currentState.openEndDrawer(),
+                                ),
+                                SizedBox(
+                                  width: _screenSize.width / 20,
+                                ),
+                              ],
+                            ),
+                      endDrawer: AppDrawer(context),
+                      key: _scaffoldKey,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      body: RefreshIndicator(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        onRefresh: () async {
+                          setState(() {
+                            _force = true;
+                          });
+                        }, // don't call getData because of FutureBuilder
+                        child: Center(
+                          child: _searchActive
+                              ? _buildSearchResults()
+                              : ListView.builder(
+                                  itemCount: matchQuestions.length,
+                                  itemBuilder: (ctx, index) {
+                                    return QuestionTile(
+                                        matchQuestions[index], allCategories);
+                                  },
+                                ),
                         ),
-                        backgroundColor: Colors.grey[300],
-                        iconTheme: IconThemeData(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        actions: [
-                          SizedBox(
-                            width: _screenSize.width / 20,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _searchActive = !_searchActive;
-                              });
-                              // showSearch(
-                              //     context: context,
-                              //     delegate:
-                              //         Search(_allQuestions, _matchQuestions, allCategories));
-                            },
-                            child: Icon(Icons.search, size: 30),
-                          ),
-                          SizedBox(
-                            width: _screenSize.width / 20,
-                          ),
-                          GestureDetector(
-                            child: Icon(Icons.menu,
-                                size: 30), // change this size and style
-                            onTap: () =>
-                                _scaffoldKey.currentState.openEndDrawer(),
-                          ),
-                          SizedBox(
-                            width: _screenSize.width / 20,
-                          ),
-                        ],
                       ),
-                endDrawer: AppDrawer(context),
-                key: _scaffoldKey,
-                backgroundColor: Theme.of(context).primaryColor,
-                body: RefreshIndicator(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  onRefresh: () async {
-                    setState(() {
-                      _force = true;
-                    });
-                  }, // don't call getData because of FutureBuilder
-                  child: Center(
-                      child: _searchActive
-                          ? _buildSearchResults()
-                          : ListView.builder(
-                              itemCount: matchQuestions.length,
-                              itemBuilder: (ctx, index) {
-                                return QuestionTile(
-                                    matchQuestions[index], allCategories);
-                              })),
-                ),
-                floatingActionButton: FloatingActionButton(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  child: Icon(
-                    Icons.message,
-                    color: Theme.of(context).accentColor,
-                  ),
-                  onPressed: () =>
-                      Navigator.pop(context, QuestionsChatsScreen.routeName),
-                ),
-              );
+                      floatingActionButton: FloatingActionButton(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        child: Icon(
+                          Icons.message,
+                          color: Theme.of(context).accentColor,
+                        ),
+                        onPressed: () => Navigator.pop(
+                            context, QuestionsChatsScreen.routeName),
+                      ),
+                    );
+                  });
             });
   }
 }
