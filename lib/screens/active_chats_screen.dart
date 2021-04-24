@@ -78,7 +78,7 @@ class ActiveChatsScreen extends StatelessWidget {
           ),
           SizedBox(height: 20),
           Container(
-            height: 100,
+            height: 500,
             child: ListView.builder(
               itemCount: activeChats.length,
               itemBuilder: (context, i) => Column(
@@ -102,7 +102,8 @@ class ActiveChatsScreen extends StatelessWidget {
                                 snapshot.data == null
                                     ? 'Deleted User'
                                     : snapshot.data,
-                                style: TextStyle(fontFamily: 'PT_Serif'),
+                                style: TextStyle(
+                                    fontFamily: 'PT_Serif', fontSize: 20),
                               );
                             }
                           }),
@@ -112,23 +113,56 @@ class ActiveChatsScreen extends StatelessWidget {
                             arguments: [question.id, activeChats[i]]);
                       },
                     ),
-                    trailing: FutureBuilder(
-                        future: DatabaseService().unreadMessageCounter(
-                            question.id, activeChats[i], user.uid),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState !=
-                              ConnectionState.waiting) {
-                            if (snapshot.data == 0) {
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FutureBuilder(
+                            future: DatabaseService().isNewPartner(
+                                question.id, activeChats[i], user.uid),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState !=
+                                  ConnectionState.waiting) {
+                                if (snapshot.data == false) {
+                                  return CircleAvatar(
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                    child: Icon(
+                                      Icons.star,
+                                    ),
+                                  );
+                                }
+                                return SizedBox();
+                              }
                               return SizedBox();
-                            } else {
-                              return CircleAvatar(
-                                backgroundColor: Colors.red,
-                                child: Text("${snapshot.data}"),
-                              );
-                            }
-                          }
-                          return SizedBox();
-                        }),
+                            }),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        FutureBuilder(
+                            future: DatabaseService().unreadMessageCounter(
+                                question.id, activeChats[i], user.uid),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState !=
+                                  ConnectionState.waiting) {
+                                if (snapshot.data == 0) {
+                                  return SizedBox();
+                                } else {
+                                  return CircleAvatar(
+                                    backgroundColor: Colors.red,
+                                    child: Text(
+                                      "${snapshot.data}",
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  );
+                                }
+                              }
+                              return SizedBox();
+                            }),
+                      ],
+                    ),
                   ),
                 ],
               ),

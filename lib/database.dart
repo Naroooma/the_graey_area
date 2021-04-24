@@ -92,7 +92,6 @@ class DatabaseService {
     var partner = users.documents
         .where((element) => element.data['id'] == partnerID)
         .toList();
-    print(partner);
     return partner[0].documentID;
   }
 
@@ -132,37 +131,40 @@ class DatabaseService {
         .collection('chats')
         .document(cid)
         .get();
-    int mcount = messagesSnapshot.data["messageCount"];
+    int mcount = messagesSnapshot.data["messageCount"] == null
+        ? 0
+        : messagesSnapshot.data["messageCount"];
+    ;
     int m1count = messagesSnapshot.data["${uid}messageCount"] == null
         ? 0
         : messagesSnapshot.data["${uid}messageCount"];
     return mcount - m1count;
   }
 
+  void seenPartner(String qid, String cid, String uid) {
+    questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .updateData({
+      "${uid}partnerseen": true,
+    });
+  }
+
+  // check if partner is new
+  Future<void> isNewPartner(String qid, String cid, String uid) async {
+    DocumentSnapshot chatSnapshot = await questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .get();
+
+    return chatSnapshot.data["${uid}partnerseen"] == true
+        ? chatSnapshot.data["${uid}partnerseen"]
+        : false;
+  }
+
   // stream for all active questions that shows changes
-
-  // stream that checks for new messages, and returns counter.
-  // int newMessageCounter(String uid, String qid, String cid) {
-  //   // get time of last check
-
-  //   StreamSubscription chatListener;
-  //   Stream<QuerySnapshot> chatSnapshot = questionsCollection
-  //       .document(qid)
-  //       .collection('chats')
-  //       .document(cid)
-  //       .collection('messages')
-  //       .snapshots();
-
-  //   chatListener = chatSnapshot.listen((collection) {
-
-  //     collection.map((list) {
-  //     return list.documents.map((doc) {
-  //       return ActiveQuestion(
-  //           activeChats: doc.data['active_chats'], id: doc.documentID);
-  //     }).toList();
-  //   });
-  //   });
-  // }
 
   // check if user half answered specific question, if so return first answer
 

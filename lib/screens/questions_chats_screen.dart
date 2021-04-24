@@ -94,9 +94,6 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                     child: CircularProgressIndicator(),
                   );
                 }
-                for (var i in snapshot.data) {
-                  print(i.id);
-                }
                 List<ActiveQuestion> activeQuestions = snapshot.data
                     .where((doc) => doc.activeChats != null)
                     .toList();
@@ -105,13 +102,9 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                     .where((doc) => doc.activeChats == null)
                     .toList();
                 // open stream for all unpartneredquestions
-                Provider.of<Partner>(context, listen: false)
-                    .setUserID(user.uid);
                 for (var unpartneredQ in unpartneredQuestions) {
-                  Provider.of<Partner>(context, listen: false).qID =
-                      unpartneredQ.id;
                   Provider.of<Partner>(context, listen: false)
-                      .openPartnerStream();
+                      .openPartnerStream(user.uid, unpartneredQ.id);
                 }
                 return ListView.builder(
                   itemCount: activeQuestions.length,
@@ -132,7 +125,8 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                             // get all questions
                             // display matching text for docID
 
-                            style: TextStyle(fontFamily: 'PT_Serif'),
+                            style:
+                                TextStyle(fontFamily: 'PT_Serif', fontSize: 20),
                           ),
                           onTap: () {
                             Navigator.pushNamed(

@@ -17,7 +17,6 @@ class Categories with ChangeNotifier {
     if (init != null) {
       this._favCategories = init;
     }
-    print(this._favCategories);
   }
 
   void addCategory(var value) {

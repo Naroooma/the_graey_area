@@ -59,7 +59,7 @@ class Partner with ChangeNotifier {
         .document(partnerID)
         .updateData({'chat': chatDoc.documentID});
 
-    notifyChatFound(chatDoc.documentID);
+    notifyChatFound(chatDoc.documentID, userID, qID);
   }
 
   Future<void> searchForPartner(double answer, double lookingFor) async {
@@ -83,10 +83,10 @@ class Partner with ChangeNotifier {
     notifyChatNotFound();
 
     // if no match found, setup stream listner that waits for flag
-    openPartnerStream();
+    openPartnerStream(userID, qID);
   }
 
-  void openPartnerStream() {
+  void openPartnerStream(String userID, String qID) {
     StreamSubscription foundListener;
     Stream<DocumentSnapshot> waitingSnapshot = Firestore.instance
         .collection('questions')
@@ -96,13 +96,17 @@ class Partner with ChangeNotifier {
         .snapshots();
 
     foundListener = waitingSnapshot.listen((document) async {
+      print(userID);
+      print(qID);
+      print(document.data);
       // when flaged, delete my waiting_room + stop stream
       if (document.data != null && document.data['chat'] != null) {
+        print(document.data);
         print("Chat Found At:");
         print(document.data['chat']);
 
         // notify that chat was found
-        notifyChatFound(document.data['chat']);
+        notifyChatFound(document.data['chat'], userID, qID);
         // stop stream
         foundListener.cancel();
 
@@ -117,7 +121,7 @@ class Partner with ChangeNotifier {
     });
   }
 
-  Future<void> notifyChatFound(String newChatID) async {
+  Future<void> notifyChatFound(String newChatID, userID, qID) async {
     this.chatID = newChatID;
     notifyListeners();
     // add chat id to active_chats for user

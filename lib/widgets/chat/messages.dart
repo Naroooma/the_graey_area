@@ -37,6 +37,7 @@ class Messages extends StatelessWidget {
                 );
               }
               DatabaseService().readMessage(qID, chatID, user.uid);
+              DatabaseService().seenPartner(qID, chatID, user.uid);
               final chatDocs = chatSnapshot.data.documents;
               return ListView.builder(
                 reverse: true,
