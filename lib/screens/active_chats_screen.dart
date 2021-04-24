@@ -8,16 +8,27 @@ import 'package:the_graey_area/models/active_question.dart';
 import 'package:the_graey_area/models/question.dart';
 import 'package:the_graey_area/screens/chat_screen.dart';
 import 'package:the_graey_area/screens/question_screen.dart';
+import 'package:the_graey_area/screens/questions_chats_screen.dart';
 import 'package:the_graey_area/widgets/app_drawer.dart';
 import '../database.dart';
 
-class ActiveChatsScreen extends StatelessWidget {
+class ActiveChatsScreen extends StatefulWidget {
   static const routeName = '/active-chats-screen';
 
+  @override
+  _ActiveChatsScreenState createState() => _ActiveChatsScreenState();
+}
+
+class _ActiveChatsScreenState extends State<ActiveChatsScreen> {
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  void rebuild(dynamic a) {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
+    print('REBUILT');
     // var _screenSize = MediaQuery.of(context).size;
     //
     final user = Provider.of<FirebaseUser>(context);
@@ -58,14 +69,15 @@ class ActiveChatsScreen extends StatelessWidget {
         children: [
           SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () => Navigator.of(context).pushNamed(
-                QuestionScreen.routeName,
-                arguments: Question(
-                    id: question.id,
-                    text: allQuestions
-                        .where((q) => question.id == q.id)
-                        .toList()[0]
-                        .text)),
+            onPressed: () => Navigator.of(context)
+                .pushNamed(QuestionScreen.routeName,
+                    arguments: Question(
+                        id: question.id,
+                        text: allQuestions
+                            .where((q) => question.id == q.id)
+                            .toList()[0]
+                            .text))
+                .then((value) => rebuild(value)),
             child: Text('Find New Partner'),
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -88,36 +100,40 @@ class ActiveChatsScreen extends StatelessWidget {
                   ),
                   ListTile(
                     title: InkWell(
-                      child: FutureBuilder<String>(
-                          future: DatabaseService().partnerUsername(
-                              activeChats[i], question.id, user.uid),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Container();
-                            } else {
-                              return Text(
-                                // get all questions
-                                // display matching text for docID
-                                snapshot.data == null
-                                    ? 'Deleted User'
-                                    : snapshot.data,
-                                style: TextStyle(
-                                    fontFamily: 'PT_Serif', fontSize: 20),
-                              );
-                            }
-                          }),
+                      child: user == null || user.uid == null
+                          ? CircularProgressIndicator()
+                          : FutureBuilder<String>(
+                              future: DatabaseService().partnerUsername(
+                                  activeChats[i], question.id, user.uid),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Container();
+                                } else {
+                                  return Text(
+                                    // get all questions
+                                    // display matching text for docID
+                                    snapshot.data == null
+                                        ? 'Deleted User'
+                                        : snapshot.data,
+                                    style: TextStyle(
+                                        fontFamily: 'PT_Serif', fontSize: 20),
+                                  );
+                                }
+                              }),
                       onTap: () {
-                        Navigator.of(context).pushReplacementNamed(
-                            ChatScreen.routeName,
-                            arguments: [question.id, activeChats[i]]);
+                        Navigator.of(context).pushNamed(ChatScreen.routeName,
+                            arguments: [
+                              question.id,
+                              activeChats[i]
+                            ]).then((value) => rebuild(value));
                       },
                     ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         FutureBuilder(
-                            future: DatabaseService().isNewPartner(
+                            future: DatabaseService().partnerSeen(
                                 question.id, activeChats[i], user.uid),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState !=

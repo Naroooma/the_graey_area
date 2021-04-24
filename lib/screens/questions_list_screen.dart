@@ -33,6 +33,10 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
   String query = "";
   final TextEditingController _filter = new TextEditingController();
 
+  void rebuild(dynamic a) {
+    setState(() {});
+  }
+
   AppBar buildSearchBar() {
     return AppBar(
       backgroundColor: Colors.grey[300],
@@ -223,8 +227,9 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                               Icons.message,
                               color: Theme.of(context).accentColor,
                             ),
-                            onPressed: () => Navigator.pop(
-                                context, QuestionsChatsScreen.routeName),
+                            onPressed: () => Navigator.pushNamed(
+                                    context, QuestionsChatsScreen.routeName)
+                                .then((value) => rebuild(value)),
                           ),
                         );
                       });

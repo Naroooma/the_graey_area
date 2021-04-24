@@ -29,6 +29,10 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    void rebuild(dynamic a) {
+      setState(() {});
+    }
+
     var _screenSize = MediaQuery.of(context).size;
 
     FirebaseUser user = Provider.of<FirebaseUser>(context);
@@ -98,11 +102,14 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                     .where((doc) => doc.activeChats != null)
                     .toList();
 
+                // unpartneredQuesion if in active_question => waiting room
+
                 List<ActiveQuestion> unpartneredQuestions = snapshot.data
                     .where((doc) => doc.activeChats == null)
                     .toList();
                 // open stream for all unpartneredquestions
                 for (var unpartneredQ in unpartneredQuestions) {
+                  print(unpartneredQ);
                   Provider.of<Partner>(context, listen: false)
                       .openPartnerStream(user.uid, unpartneredQ.id);
                 }
@@ -130,8 +137,31 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                           ),
                           onTap: () {
                             Navigator.pushNamed(
-                                context, ActiveChatsScreen.routeName,
-                                arguments: activeQuestions[i]);
+                                    context, ActiveChatsScreen.routeName,
+                                    arguments: activeQuestions[i])
+                                .then((value) => rebuild(value));
+                          },
+                        ),
+                        trailing: FutureBuilder(
+                          future: DatabaseService().doesQNewPartner(
+                              activeQuestions[i].id,
+                              user.uid,
+                              activeQuestions[i].activeChats),
+                          builder: (ctx, snapshot) {
+                            if (snapshot.connectionState !=
+                                ConnectionState.waiting) {
+                              if (snapshot.data == true) {
+                                return CircleAvatar(
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                  child: Icon(
+                                    Icons.star,
+                                  ),
+                                );
+                              }
+                              return SizedBox();
+                            }
+                            return SizedBox();
                           },
                         ),
                       ),
@@ -145,8 +175,8 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
           Icons.add,
           color: Theme.of(context).accentColor,
         ),
-        onPressed: () =>
-            Navigator.pushNamed(context, QuestionsListScreen.routeName),
+        onPressed: () => Navigator.pushReplacementNamed(
+            context, QuestionsListScreen.routeName),
       ),
     );
   }
