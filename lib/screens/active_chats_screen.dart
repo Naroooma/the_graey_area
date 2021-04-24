@@ -138,28 +138,41 @@ class ActiveChatsScreen extends StatelessWidget {
                         SizedBox(
                           width: 5,
                         ),
-                        FutureBuilder(
-                            future: DatabaseService().unreadMessageCounter(
-                                question.id, activeChats[i], user.uid),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState !=
+                        StreamBuilder<Object>(
+                            stream: DatabaseService()
+                                .messageCount(question.id, activeChats[i]),
+                            builder: (context, messageCountSnapshot) {
+                              if (messageCountSnapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                if (snapshot.data == 0) {
-                                  return SizedBox();
-                                } else {
-                                  return CircleAvatar(
-                                    backgroundColor: Colors.red,
-                                    child: Text(
-                                      "${snapshot.data}",
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  );
-                                }
+                                return SizedBox();
                               }
-                              return SizedBox();
+                              return FutureBuilder(
+                                  future: DatabaseService()
+                                      .unreadMessageCounter(
+                                          question.id,
+                                          activeChats[i],
+                                          user.uid,
+                                          messageCountSnapshot.data),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState !=
+                                        ConnectionState.waiting) {
+                                      if (snapshot.data == 0) {
+                                        return SizedBox();
+                                      } else {
+                                        return CircleAvatar(
+                                          backgroundColor: Colors.red,
+                                          child: Text(
+                                            "${snapshot.data}",
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        );
+                                      }
+                                    }
+                                    return SizedBox();
+                                  });
                             }),
                       ],
                     ),

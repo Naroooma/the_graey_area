@@ -86,7 +86,7 @@ class Partner with ChangeNotifier {
     openPartnerStream(userID, qID);
   }
 
-  void openPartnerStream(String userID, String qID) {
+  String openPartnerStream(String userID, String qID) {
     StreamSubscription foundListener;
     Stream<DocumentSnapshot> waitingSnapshot = Firestore.instance
         .collection('questions')
@@ -96,15 +96,8 @@ class Partner with ChangeNotifier {
         .snapshots();
 
     foundListener = waitingSnapshot.listen((document) async {
-      print(userID);
-      print(qID);
-      print(document.data);
       // when flaged, delete my waiting_room + stop stream
       if (document.data != null && document.data['chat'] != null) {
-        print(document.data);
-        print("Chat Found At:");
-        print(document.data['chat']);
-
         // notify that chat was found
         notifyChatFound(document.data['chat'], userID, qID);
         // stop stream

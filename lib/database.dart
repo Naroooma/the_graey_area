@@ -124,21 +124,31 @@ class DatabaseService {
     });
   }
 
+  // !!! use stream for overall message count !!!
+  Stream<int> messageCount(String qid, String cid) {
+    return questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .snapshots()
+        .map((doc) {
+      return doc.data["messageCount"] == null ? 0 : doc.data["messageCount"];
+    });
+  }
+
   // unread messages counter
-  Future<void> unreadMessageCounter(String qid, String cid, String uid) async {
+  Future<void> unreadMessageCounter(
+      String qid, String cid, String uid, int messageC) async {
     DocumentSnapshot messagesSnapshot = await questionsCollection
         .document(qid)
         .collection('chats')
         .document(cid)
         .get();
-    int mcount = messagesSnapshot.data["messageCount"] == null
-        ? 0
-        : messagesSnapshot.data["messageCount"];
-    ;
+
     int m1count = messagesSnapshot.data["${uid}messageCount"] == null
         ? 0
         : messagesSnapshot.data["${uid}messageCount"];
-    return mcount - m1count;
+    return messageC - m1count;
   }
 
   void seenPartner(String qid, String cid, String uid) {
@@ -164,7 +174,8 @@ class DatabaseService {
         : false;
   }
 
-  // stream for all active questions that shows changes
+  // total unread messages in a specific question
+  //
 
   // check if user half answered specific question, if so return first answer
 
