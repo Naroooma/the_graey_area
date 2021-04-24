@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:the_graey_area/models/category.dart';
 import 'dart:async';
 
+import 'models/active_question.dart';
 import 'models/question.dart';
 
 class DatabaseService {
@@ -12,6 +13,8 @@ class DatabaseService {
       Firestore.instance.collection('questions');
   final CollectionReference categoriesCollection =
       Firestore.instance.collection('categories');
+  final CollectionReference userNamesCollection =
+      Firestore.instance.collection('userNames');
 
   // void allCateogiresData() {
   //   StreamSubscription allCategoriesListener;
@@ -50,4 +53,132 @@ class DatabaseService {
           .toList();
     });
   }
+
+  Stream<List<ActiveQuestion>> activeQuestions(String uid) {
+    return usersCollection
+        .document(uid)
+        .collection('active_questions')
+        .snapshots()
+        .map((list) {
+      return list.documents.map((doc) {
+        return ActiveQuestion(
+            activeChats: doc.data['active_chats'], id: doc.documentID);
+      }).toList();
+    });
+  }
+
+  Future<String> partnerUsername(
+      String chatID, String qID, String userID) async {
+    // get all users with corresponding id
+    QuerySnapshot users = await userNamesCollection.getDocuments();
+
+    var partnerID = '';
+
+    // find partnerID by going into chat
+    //
+    var chat = await Firestore.instance
+        .collection('questions')
+        .document(qID)
+        .collection('chats')
+        .document(chatID)
+        .get();
+
+    if (chat.data['user1_id'] != userID) {
+      partnerID = chat.data['user1_id'];
+    } else {
+      partnerID = chat.data['user2_id'];
+    }
+
+    var partner = users.documents
+        .where((element) => element.data['id'] == partnerID)
+        .toList();
+    return partner[0].documentID;
+  }
+
+  // send message
+  void newMessage(String qid, String cid, String uid) {
+    questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .updateData({
+      "messageCount": FieldValue.increment(1),
+      "${uid}messageCount": FieldValue.increment(1),
+    });
+  }
+
+  // read messages
+  void readMessage(String qid, String cid, String uid) async {
+    QuerySnapshot messagesSnapshot = await questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .collection('messages')
+        .getDocuments();
+    questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .updateData({
+      "${uid}messageCount": messagesSnapshot.documents.length,
+    });
+  }
+
+  // !!! use stream for overall message count !!!
+  Stream<int> messageCount(String qid, String cid) {
+    return questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .snapshots()
+        .map((doc) {
+      return doc.data["messageCount"] == null ? 0 : doc.data["messageCount"];
+    });
+  }
+
+  // unread messages counter
+  Future<void> unreadMessageCounter(
+      String qid, String cid, String uid, int messageC) async {
+    DocumentSnapshot messagesSnapshot = await questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .get();
+
+    int m1count = messagesSnapshot.data["${uid}messageCount"] == null
+        ? 0
+        : messagesSnapshot.data["${uid}messageCount"];
+    return messageC - m1count;
+  }
+
+  void seenPartner(String qid, String cid, String uid) {
+    questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .updateData({
+      "${uid}partnerseen": true,
+    });
+  }
+
+  // check if partner is new
+  Future<void> isNewPartner(String qid, String cid, String uid) async {
+    DocumentSnapshot chatSnapshot = await questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .get();
+
+    return chatSnapshot.data["${uid}partnerseen"] == true
+        ? chatSnapshot.data["${uid}partnerseen"]
+        : false;
+  }
+
+  // total unread messages in a specific question
+  //
+
+  // check if user half answered specific question, if so return first answer
+
+  // check if searching for partner in specific question
+
 }

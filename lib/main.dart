@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/database.dart';
 import 'package:the_graey_area/home.dart';
@@ -20,7 +21,13 @@ import 'providers/partner.dart';
 import 'providers/search.dart';
 import 'screens/questions_list_screen.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
+  return runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -36,15 +43,16 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<DatabaseService>.value(
+          value: DatabaseService(),
+        ),
         StreamProvider<List<Category>>.value(
             value: DatabaseService().allCategories),
         StreamProvider<List<Question>>.value(
             value: DatabaseService().allQuestions),
-        Provider<DatabaseService>.value(
-          value: DatabaseService(),
-        ),
         StreamProvider<FirebaseUser>.value(
-            value: FirebaseAuth.instance.onAuthStateChanged),
+          value: FirebaseAuth.instance.onAuthStateChanged,
+        ),
         ChangeNotifierProvider<Categories>(
           create: (_) => Categories(),
         ),

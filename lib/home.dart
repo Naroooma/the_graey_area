@@ -47,7 +47,6 @@ class Home extends StatelessWidget {
               if (futuresnapshot.data == null || futuresnapshot.data == true) {
                 return CategoryPickerScreen();
               } else {
-                // StreamBuidler for all relevant Data: Questions, Categories, Active Chats
                 return QuestionsChatsScreen();
               }
             }

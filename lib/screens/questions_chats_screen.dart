@@ -1,12 +1,16 @@
 // listview of all active questions, with small preview of new chats
 // navigation to new questions
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:the_graey_area/models/active_question.dart';
+import 'package:the_graey_area/models/question.dart';
+import 'package:the_graey_area/providers/partner.dart';
 import 'package:the_graey_area/screens/active_chats_screen.dart';
 import 'package:the_graey_area/screens/questions_list_screen.dart';
 import 'package:the_graey_area/widgets/app_drawer.dart';
+import '../database.dart';
 
 class QuestionsChatsScreen extends StatefulWidget {
   static const routeName = '/questions-chats-screen';
@@ -26,6 +30,11 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
   @override
   Widget build(BuildContext context) {
     var _screenSize = MediaQuery.of(context).size;
+
+    FirebaseUser user = Provider.of<FirebaseUser>(context);
+
+    List<dynamic> allQuestions = Provider.of<List<Question>>(context);
+
     return Scaffold(
       // appBar: _searchActive
       //     ? buildSearchBar()
@@ -73,64 +82,71 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
       endDrawer: AppDrawer(context),
       backgroundColor: Theme.of(context).accentColor,
       key: _scaffoldKey,
-      body: FutureBuilder(
-        future: FirebaseAuth.instance.currentUser(),
-        builder: (context, userSnap) {
-          if (userSnap.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return StreamBuilder(
-            stream: Firestore.instance
-                .collection('users')
-                .document(userSnap.data.uid)
-                .collection('active_questions')
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              List activeQuestions = snapshot.data.documents;
-              return ListView.builder(
-                itemCount: activeQuestions.length,
-                itemBuilder: (context, i) => Column(
-                  children: [
-                    Divider(
-                      height: 10.0,
-                    ),
-                    ListTile(
-                      title: InkWell(
-                        child: Text(
-                          // get all questions
-                          // display matching text for docID
-                          activeQuestions[i].documentID,
-                          style: TextStyle(fontFamily: 'PT_Serif'),
-                        ),
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, ActiveChatsScreen.routeName,
-                              arguments: activeQuestions[i]);
-                        },
+      // if user has logged out, close stream
+      body: user == null || user.uid == null
+          ? CircularProgressIndicator()
+          : StreamBuilder<List<ActiveQuestion>>(
+              stream: Provider.of<DatabaseService>(context)
+                  .activeQuestions(user.uid),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                List<ActiveQuestion> activeQuestions = snapshot.data
+                    .where((doc) => doc.activeChats != null)
+                    .toList();
+
+                List<ActiveQuestion> unpartneredQuestions = snapshot.data
+                    .where((doc) => doc.activeChats == null)
+                    .toList();
+                // open stream for all unpartneredquestions
+                for (var unpartneredQ in unpartneredQuestions) {
+                  Provider.of<Partner>(context, listen: false)
+                      .openPartnerStream(user.uid, unpartneredQ.id);
+                }
+                return ListView.builder(
+                  itemCount: activeQuestions.length,
+                  itemBuilder: (context, i) => Column(
+                    children: [
+                      Divider(
+                        height: 10.0,
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-      ),
+                      ListTile(
+                        title: InkWell(
+                          child: Text(
+                            // text of question that matches id
+                            allQuestions
+                                .where((question) =>
+                                    question.id == activeQuestions[i].id)
+                                .toList()[0]
+                                .text,
+                            // get all questions
+                            // display matching text for docID
+
+                            style:
+                                TextStyle(fontFamily: 'PT_Serif', fontSize: 20),
+                          ),
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, ActiveChatsScreen.routeName,
+                                arguments: activeQuestions[i]);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         child: Icon(
           Icons.add,
           color: Theme.of(context).accentColor,
         ),
-        onPressed: () => Navigator.pushReplacementNamed(
-            context, QuestionsListScreen.routeName),
+        onPressed: () =>
+            Navigator.pushNamed(context, QuestionsListScreen.routeName),
       ),
     );
   }

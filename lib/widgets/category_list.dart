@@ -20,7 +20,8 @@ class _CategoryListState extends State<CategoryList> {
       itemBuilder: (ctx, index) {
         bool selection = false;
 
-        if (widget.favCategories.contains(widget.allCategories[index].name)) {
+        if (widget.favCategories != null &&
+            widget.favCategories.contains(widget.allCategories[index].name)) {
           selection = true;
         }
 
