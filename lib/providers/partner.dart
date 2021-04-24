@@ -86,7 +86,7 @@ class Partner with ChangeNotifier {
     openPartnerStream(userID, qID);
   }
 
-  String openPartnerStream(String userID, String qID) {
+  void openPartnerStream(String userID, String qID) {
     StreamSubscription foundListener;
     Stream<DocumentSnapshot> waitingSnapshot = Firestore.instance
         .collection('questions')
