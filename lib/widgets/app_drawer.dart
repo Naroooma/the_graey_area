@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:the_graey_area/providers/auth.dart';
 
 import '../providers/categories.dart';
 
@@ -13,8 +14,6 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseUser user = Provider.of<FirebaseUser>(context);
-
     return Container(
       width: MediaQuery.of(context).size.width * 0.6,
       child: Drawer(
@@ -38,8 +37,10 @@ class AppDrawer extends StatelessWidget {
                     child: InkWell(
                       onTap: () {
                         Navigator.popUntil(context, ModalRoute.withName("/"));
+
                         Provider.of<Categories>(ctx, listen: false)
                             .reset(); // resets fav categories
+                        // Provider.of<Auth>(ctx, listen: false).setUser(null);
                         try {
                           FirebaseAuth.instance.signOut();
                         } catch (a) {

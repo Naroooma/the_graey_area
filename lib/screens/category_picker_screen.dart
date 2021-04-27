@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/category.dart';
+import 'package:the_graey_area/providers/auth.dart';
 import 'package:the_graey_area/screens/questions_chats_screen.dart';
 
 import '../database.dart';
@@ -15,7 +16,7 @@ class CategoryPickerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<FirebaseUser>(context);
+    final user = Provider.of<Auth>(context).user;
 
     List<dynamic> allCategories = Provider.of<List<Category>>(context);
 
@@ -26,8 +27,7 @@ class CategoryPickerScreen extends StatelessWidget {
         child: user == null || user.uid == null
             ? CircularProgressIndicator()
             : StreamBuilder<Object>(
-                stream: Provider.of<DatabaseService>(context)
-                    .favCategories(user.uid),
+                stream: DatabaseService().favCategories(user.uid),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();

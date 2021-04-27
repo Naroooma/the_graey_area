@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/database.dart';
+import 'package:the_graey_area/providers/auth.dart';
 
 class NewMessage extends StatefulWidget {
   final qID;
@@ -41,7 +42,7 @@ class _NewMessageState extends State<NewMessage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<FirebaseUser>(context);
+    final user = Provider.of<Auth>(context).user;
     return Container(
       color: Theme.of(context).accentColor,
       margin: EdgeInsets.only(top: 8),

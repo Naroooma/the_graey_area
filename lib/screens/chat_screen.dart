@@ -35,7 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
             size: 30,
             color: Theme.of(context).primaryColor,
           ),
-          onTap: () => Navigator.of(context).pop(),
+          onTap: () => Navigator.of(context).pop('from back'),
         ),
         actions: [
           GestureDetector(

@@ -176,7 +176,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
             size: 30,
             color: Theme.of(context).primaryColor,
           ),
-          onTap: () => Navigator.of(context).pop(),
+          onTap: () => Navigator.of(context).pop('from back'),
         ),
         actions: [
           GestureDetector(

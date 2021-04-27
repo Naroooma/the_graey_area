@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/database.dart';
+import 'package:the_graey_area/providers/auth.dart';
 
 import 'message_bubble.dart';
 
@@ -14,7 +15,7 @@ class Messages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<FirebaseUser>(context);
+    final user = Provider.of<Auth>(context).user;
 
     return user == null || user.uid == null
         ? CircularProgressIndicator()

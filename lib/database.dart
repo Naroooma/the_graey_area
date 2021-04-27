@@ -70,6 +70,19 @@ class DatabaseService {
     });
   }
 
+  Stream<List<dynamic>> activeChatsforQ(String qid, String uid) {
+    print(qid);
+
+    return usersCollection
+        .document(uid)
+        .collection('active_questions')
+        .document(qid)
+        .snapshots()
+        .map((q) {
+      return q.data['active_chats'];
+    });
+  }
+
   Future<String> partnerUsername(
       String chatID, String qID, String userID) async {
     // get all users with corresponding id
@@ -96,6 +109,29 @@ class DatabaseService {
         .where((element) => element.data['id'] == partnerID)
         .toList();
     return partner[0].documentID;
+  }
+
+  Future<bool> inWaitingRoom(String qid, String uid) async {
+    DocumentSnapshot waitingRoomEntry = await Firestore.instance
+        .collection('questions')
+        .document(qid)
+        .collection('waiting_room')
+        .document(uid)
+        .get();
+
+    return waitingRoomEntry == null ? false : true;
+  }
+
+  Future<List<String>> unPartneredList(
+      List<ActiveQuestion> activeQuestions, String uid) async {
+    List<String> unpartneredQsID = [];
+    for (var activeQ in activeQuestions) {
+      // if question in waiting room, add to
+      if (await inWaitingRoom(activeQ.id, uid)) {
+        unpartneredQsID.add(activeQ.id);
+      }
+    }
+    return unpartneredQsID;
   }
 
   // send message

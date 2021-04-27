@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/active_question.dart';
 import 'package:the_graey_area/models/question.dart';
+import 'package:the_graey_area/providers/auth.dart';
 import 'package:the_graey_area/providers/partner.dart';
 import 'package:the_graey_area/screens/active_chats_screen.dart';
 import 'package:the_graey_area/screens/questions_list_screen.dart';
@@ -30,12 +31,14 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
   @override
   Widget build(BuildContext context) {
     void rebuild(dynamic a) {
-      setState(() {});
+      if (a == 'from back') {
+        setState(() {});
+      }
     }
 
     var _screenSize = MediaQuery.of(context).size;
 
-    FirebaseUser user = Provider.of<FirebaseUser>(context);
+    FirebaseUser user = Provider.of<Auth>(context).user;
 
     List<dynamic> allQuestions = Provider.of<List<Question>>(context);
 
@@ -98,76 +101,93 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                     child: CircularProgressIndicator(),
                   );
                 }
-                List<ActiveQuestion> activeQuestions = snapshot.data
+                // partneredQuestions are the ones that have chats
+                List<ActiveQuestion> partneredQuestions = snapshot.data
                     .where((doc) => doc.activeChats != null)
                     .toList();
 
                 // unpartneredQuesion if in active_question => waiting room
-
-                List<ActiveQuestion> unpartneredQuestions = snapshot.data
-                    .where((doc) => doc.activeChats == null)
-                    .toList();
+                // List<ActiveQuestion> unpartneredQuestions = snapshot.data
+                //     .where((doc) => doc.activeChats == null)
+                //     .toList();
                 // open stream for all unpartneredquestions
-                for (var unpartneredQ in unpartneredQuestions) {
-                  print(unpartneredQ);
-                  Provider.of<Partner>(context, listen: false)
-                      .openPartnerStream(user.uid, unpartneredQ.id);
-                }
-                return ListView.builder(
-                  itemCount: activeQuestions.length,
-                  itemBuilder: (context, i) => Column(
-                    children: [
-                      Divider(
-                        height: 10.0,
-                      ),
-                      ListTile(
-                        title: InkWell(
-                          child: Text(
-                            // text of question that matches id
-                            allQuestions
-                                .where((question) =>
-                                    question.id == activeQuestions[i].id)
-                                .toList()[0]
-                                .text,
-                            // get all questions
-                            // display matching text for docID
+                // for (var unpartneredQ in unpartneredQuestions) {
+                //   print(unpartneredQ);
+                //   Provider.of<Partner>(context, listen: false)
+                //       .openPartnerStream(user.uid, unpartneredQ.id);
+                // }
+                return FutureBuilder(
+                    future: DatabaseService()
+                        .unPartneredList(snapshot.data, user.uid),
+                    builder: (context, unPartneredSnapshot) {
+                      if (unPartneredSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      }
+                      List unPartneredIDList = unPartneredSnapshot.data;
 
-                            style:
-                                TextStyle(fontFamily: 'PT_Serif', fontSize: 20),
-                          ),
-                          onTap: () {
-                            Navigator.pushNamed(
-                                    context, ActiveChatsScreen.routeName,
-                                    arguments: activeQuestions[i])
-                                .then((value) => rebuild(value));
-                          },
+                      for (var unpartneredQID in unPartneredIDList) {
+                        Provider.of<Partner>(context, listen: false)
+                            .openPartnerStream(user.uid, unpartneredQID);
+                      }
+
+                      return ListView.builder(
+                        itemCount: partneredQuestions.length,
+                        itemBuilder: (context, i) => Column(
+                          children: [
+                            Divider(
+                              height: 10.0,
+                            ),
+                            ListTile(
+                              title: InkWell(
+                                child: Text(
+                                  // text of question that matches id
+                                  allQuestions
+                                      .where((question) =>
+                                          question.id ==
+                                          partneredQuestions[i].id)
+                                      .toList()[0]
+                                      .text,
+                                  // get all questions
+                                  // display matching text for docID
+
+                                  style: TextStyle(
+                                      fontFamily: 'PT_Serif', fontSize: 20),
+                                ),
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                          context, ActiveChatsScreen.routeName,
+                                          arguments: partneredQuestions[i])
+                                      .then((value) => rebuild(value));
+                                },
+                              ),
+                              trailing: FutureBuilder(
+                                future: DatabaseService().doesQNewPartner(
+                                    partneredQuestions[i].id,
+                                    user.uid,
+                                    partneredQuestions[i].activeChats),
+                                builder: (ctx, snapshot) {
+                                  if (snapshot.connectionState !=
+                                      ConnectionState.waiting) {
+                                    if (snapshot.data == true) {
+                                      return CircleAvatar(
+                                        backgroundColor: Colors.red,
+                                        foregroundColor: Colors.white,
+                                        child: Icon(
+                                          Icons.star,
+                                        ),
+                                      );
+                                    }
+                                    return SizedBox();
+                                  }
+                                  return SizedBox();
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                        trailing: FutureBuilder(
-                          future: DatabaseService().doesQNewPartner(
-                              activeQuestions[i].id,
-                              user.uid,
-                              activeQuestions[i].activeChats),
-                          builder: (ctx, snapshot) {
-                            if (snapshot.connectionState !=
-                                ConnectionState.waiting) {
-                              if (snapshot.data == true) {
-                                return CircleAvatar(
-                                  backgroundColor: Colors.red,
-                                  foregroundColor: Colors.white,
-                                  child: Icon(
-                                    Icons.star,
-                                  ),
-                                );
-                              }
-                              return SizedBox();
-                            }
-                            return SizedBox();
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+                      );
+                    });
               }),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
@@ -175,8 +195,8 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
           Icons.add,
           color: Theme.of(context).accentColor,
         ),
-        onPressed: () => Navigator.pushReplacementNamed(
-            context, QuestionsListScreen.routeName),
+        onPressed: () =>
+            Navigator.pushNamed(context, QuestionsListScreen.routeName),
       ),
     );
   }

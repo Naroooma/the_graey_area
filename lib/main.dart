@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,7 @@ import './providers/categories.dart';
 import './providers/auth.dart';
 import 'providers/partner.dart';
 import 'providers/search.dart';
+import 'screens/auth_screen.dart';
 import 'screens/questions_list_screen.dart';
 
 void main() {
@@ -37,7 +39,22 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
 
-  // start all streams when authenticated
+  Future<bool> catChosen() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    try {
+      DocumentSnapshot favCategories =
+          await Firestore.instance.collection('users').document(user.uid).get();
+      if (favCategories['fav_categories'] == null) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (exception) {
+      print("ERROR");
+      print(exception);
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +67,9 @@ class _MyAppState extends State<MyApp> {
             value: DatabaseService().allCategories),
         StreamProvider<List<Question>>.value(
             value: DatabaseService().allQuestions),
-        StreamProvider<FirebaseUser>.value(
-          value: FirebaseAuth.instance.onAuthStateChanged,
-        ),
+        // StreamProvider<FirebaseUser>.value(
+        //   value: FirebaseAuth.instance.onAuthStateChanged,
+        // ),
         ChangeNotifierProvider<Categories>(
           create: (_) => Categories(),
         ),
