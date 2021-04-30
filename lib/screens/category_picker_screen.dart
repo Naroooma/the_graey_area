@@ -27,7 +27,7 @@ class CategoryPickerScreen extends StatelessWidget {
         child: StreamBuilder<Object>(
           stream: DatabaseService().favCategories(user.uid),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+            if (snapshot.data == null) {
               return CircularProgressIndicator();
             } else {
               return Column(

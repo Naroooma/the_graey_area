@@ -19,7 +19,7 @@ class Messages extends StatelessWidget {
     return StreamBuilder(
         stream: DatabaseService().messagesinChat(qID, chatID, user.uid),
         builder: (ctx, chatSnapshot) {
-          if (chatSnapshot.connectionState == ConnectionState.waiting) {
+          if (chatSnapshot.data == null) {
             return Center(
               child: CircularProgressIndicator(),
             );

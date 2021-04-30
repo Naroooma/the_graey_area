@@ -40,8 +40,6 @@ class _HomeState extends State<Home> {
         builder: (ctx, snapshot) {
           var user = snapshot.data;
           Provider.of<Auth>(context).setUser(user);
-          print('USER VALUE');
-          print(user);
           if (user != null) {
             return FutureBuilder(
               future: catChosen(),

@@ -22,7 +22,6 @@ class _ActiveChatsScreenState extends State<ActiveChatsScreen> {
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   void rebuild(dynamic a) {
-    print(a);
     if (a == 'from back') {
       setState(() {});
     }
@@ -30,7 +29,6 @@ class _ActiveChatsScreenState extends State<ActiveChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('REBUILT');
     // var _screenSize = MediaQuery.of(context).size;
     //
     final user = Provider.of<Auth>(context).user;
@@ -96,11 +94,10 @@ class _ActiveChatsScreenState extends State<ActiveChatsScreen> {
             child: StreamBuilder<List<dynamic>>(
                 stream: DatabaseService().activeChatsforQ(questionID, user.uid),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
+                  if (snapshot.data == null) {
                     return CircularProgressIndicator();
                   }
                   List activeChats = snapshot.data;
-                  print(snapshot.data);
                   return ListView.builder(
                     itemCount: activeChats.length,
                     itemBuilder: (context, i) => Column(
@@ -168,8 +165,7 @@ class _ActiveChatsScreenState extends State<ActiveChatsScreen> {
                                   stream: DatabaseService().messageCount(
                                       question.id, activeChats[i]),
                                   builder: (context, messageCountSnapshot) {
-                                    if (messageCountSnapshot.connectionState ==
-                                        ConnectionState.waiting) {
+                                    if (messageCountSnapshot.data == null) {
                                       return SizedBox();
                                     }
                                     return FutureBuilder(

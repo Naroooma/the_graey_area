@@ -108,7 +108,7 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
               stream: Provider.of<DatabaseService>(context)
                   .activeQuestions(user.uid),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
+                if (snapshot.data == null) {
                   return Center(
                     child: CircularProgressIndicator(),
                   );

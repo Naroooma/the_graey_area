@@ -115,9 +115,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
         ? suggestionList = matchQuestions
         : suggestionList.addAll(
             allQuestions.where((question) {
-              return question['text']
-                  .toLowerCase()
-                  .contains(query.toLowerCase());
+              return question.text.toLowerCase().contains(query.toLowerCase());
             }),
           );
 
@@ -134,8 +132,6 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(Provider.of<Search>(context, listen: true).query);
-
     FirebaseUser user = Provider.of<Auth>(context).user;
 
     allQuestions = Provider.of<List<Question>>(context);
@@ -213,10 +209,14 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
           stream:
               Provider.of<DatabaseService>(context).activeQuestions(user.uid),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
+            // if (snapshot.connectionState == ConnectionState.waiting) {
+            //   return Center(
+            //     child: CircularProgressIndicator(),
+            //   );
+            // }
+            //
+            if (snapshot.data == null) {
+              return CircularProgressIndicator();
             }
             List activeQuestions = snapshot.data;
             allQuestions = allQuestions
@@ -227,8 +227,11 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
               stream:
                   Provider.of<DatabaseService>(context).favCategories(user.uid),
               builder: (context, favCategories) {
-                if (favCategories.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                // if (favCategories.connectionState == ConnectionState.waiting) {
+                //   return Center(child: CircularProgressIndicator());
+                // }
+                if (favCategories.data == null) {
+                  return CircularProgressIndicator();
                 }
                 matchQuestions =
                     findMatchingQuestions(favCategories.data, allQuestions);
