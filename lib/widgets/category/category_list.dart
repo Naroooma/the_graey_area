@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/category_list_button.dart';
+import './category_list_button.dart';
 
 class CategoryList extends StatefulWidget {
   final allCategories;

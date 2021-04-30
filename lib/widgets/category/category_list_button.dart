@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/categories.dart';
+import '../../providers/categories.dart';
 
 // ignore: must_be_immutable
 class CategoryListButton extends StatefulWidget {

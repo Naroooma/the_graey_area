@@ -7,8 +7,8 @@ import 'package:the_graey_area/providers/auth.dart';
 import 'package:the_graey_area/screens/questions_chats_screen.dart';
 
 import '../database.dart';
-import '../widgets/category_button.dart';
-import '../widgets/category_list.dart';
+import '../widgets/category/category_button.dart';
+import '../widgets/category/category_list.dart';
 import '../providers/categories.dart';
 
 class CategoryPickerScreen extends StatelessWidget {
