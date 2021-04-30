@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/question.dart';
-import 'package:the_graey_area/screens/active_chats_screen.dart';
 import 'package:the_graey_area/widgets/app_drawer.dart';
 import 'package:the_graey_area/widgets/chat/new_message.dart';
 import 'package:the_graey_area/widgets/reqAutoText.dart';

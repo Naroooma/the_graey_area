@@ -19,7 +19,6 @@ import './providers/categories.dart';
 import './providers/auth.dart';
 import 'providers/partner.dart';
 import 'providers/search.dart';
-import 'screens/auth_screen.dart';
 import 'screens/questions_list_screen.dart';
 
 void main() {

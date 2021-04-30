@@ -1,7 +1,6 @@
 // button to find new partner for the question
 // list / grid / scroll of all users
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/active_question.dart';
@@ -9,7 +8,6 @@ import 'package:the_graey_area/models/question.dart';
 import 'package:the_graey_area/providers/auth.dart';
 import 'package:the_graey_area/screens/chat_screen.dart';
 import 'package:the_graey_area/screens/question_screen.dart';
-import 'package:the_graey_area/screens/questions_chats_screen.dart';
 import 'package:the_graey_area/widgets/app_drawer.dart';
 import '../database.dart';
 

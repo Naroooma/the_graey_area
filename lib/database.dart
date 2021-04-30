@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:the_graey_area/models/category.dart';
-import 'package:async/async.dart';
 
 import 'models/active_question.dart';
 import 'models/message.dart';

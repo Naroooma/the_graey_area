@@ -24,110 +24,101 @@ class CategoryPickerScreen extends StatelessWidget {
       backgroundColor: Theme.of(context).primaryColor,
       body: Center(
         // if user has logged out, close stream
-        child: user == null || user.uid == null
-            ? CircularProgressIndicator()
-            : StreamBuilder<Object>(
-                stream: DatabaseService().favCategories(user.uid),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: 50,
-                        ),
-                        Text(
-                          "Let's Talk About",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).accentColor,
-                            fontFamily: 'PT_Serif',
-                            fontStyle: FontStyle.italic,
-                            fontSize: 75,
+        child: StreamBuilder<Object>(
+          stream: DatabaseService().favCategories(user.uid),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Text(
+                    "Let's Talk About",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                      fontFamily: 'PT_Serif',
+                      fontStyle: FontStyle.italic,
+                      fontSize: 75,
+                    ),
+                  ),
+                  Consumer<Categories>(
+                    builder: (context, provider, child) {
+                      // initialize provider to match favCategories from firebase
+                      provider.initCategory(snapshot.data);
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 50,
+                              vertical: 10,
+                            ),
+                            child: Text(
+                              provider.getFavCategories.length < 3
+                                  ? "Pick at least 3 categories you are interested in"
+                                  : "You have picked ${provider.getFavCategories.length} categories",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Theme.of(context).accentColor,
+                                fontFamily: 'PT_Serif',
+                                fontSize: 20,
+                              ),
+                            ),
                           ),
-                        ),
-                        Consumer<Categories>(
-                          builder: (context, provider, child) {
-                            // initialize provider to match favCategories from firebase
-                            provider.initCategory(snapshot.data);
-                            return Column(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 50,
-                                    vertical: 10,
-                                  ),
-                                  child: Text(
-                                    provider.getFavCategories.length < 3
-                                        ? "Pick at least 3 categories you are interested in"
-                                        : "You have picked ${provider.getFavCategories.length} categories",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Theme.of(context).accentColor,
-                                      fontFamily: 'PT_Serif',
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  child: Text('Next'),
-                                  onPressed: () async {
-                                    if (provider.getFavCategories.length < 3) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              "Select At Least 3 Categories"),
-                                          backgroundColor:
-                                              Theme.of(context).errorColor,
-                                        ),
-                                      );
-                                    } else {
-                                      FirebaseUser user = await FirebaseAuth
-                                          .instance
-                                          .currentUser();
-
-                                      await Firestore.instance
-                                          .collection('users')
-                                          .document(user.uid)
-                                          .updateData({
-                                        'fav_categories':
-                                            provider.getFavCategories
-                                      });
-
-                                      Navigator.pushNamed(context,
-                                          QuestionsChatsScreen.routeName);
-                                    }
-                                  },
-                                  style: ButtonStyle(
+                          ElevatedButton(
+                            child: Text('Next'),
+                            onPressed: () async {
+                              if (provider.getFavCategories.length < 3) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content:
+                                        Text("Select At Least 3 Categories"),
                                     backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                      Colors.grey[600],
-                                    ),
-                                    foregroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                      Theme.of(context).accentColor,
-                                    ),
-                                    shape: MaterialStateProperty.all<
-                                        OutlinedBorder>(
-                                      RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
-                                      ),
-                                    ),
+                                        Theme.of(context).errorColor,
                                   ),
+                                );
+                              } else {
+                                FirebaseUser user =
+                                    await FirebaseAuth.instance.currentUser();
+
+                                await Firestore.instance
+                                    .collection('users')
+                                    .document(user.uid)
+                                    .updateData({
+                                  'fav_categories': provider.getFavCategories
+                                });
+
+                                Navigator.pushNamed(
+                                    context, QuestionsChatsScreen.routeName);
+                              }
+                            },
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.grey[600],
+                              ),
+                              foregroundColor: MaterialStateProperty.all<Color>(
+                                Theme.of(context).accentColor,
+                              ),
+                              shape: MaterialStateProperty.all<OutlinedBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.0),
                                 ),
-                              ],
-                            );
-                          },
-                        ),
-                        Expanded(
-                          child: CategoryList(
-                            snapshot.data,
-                            allCategories,
-                            /* child: Stack(
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  Expanded(
+                    child: CategoryList(
+                      snapshot.data,
+                      allCategories,
+                      /* child: Stack(
                             children: [
                               SizedBox(
                                 height: 700,
@@ -240,13 +231,13 @@ class CategoryPickerScreen extends StatelessWidget {
                               ),
                             ],
                           ), */
-                          ),
-                        )
-                      ],
-                    );
-                  }
-                },
-              ),
+                    ),
+                  )
+                ],
+              );
+            }
+          },
+        ),
       ),
     );
   }
