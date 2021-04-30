@@ -114,14 +114,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
               // if answered first question
               if (text == "Your Opinion") {
                 userOpinion = _slidervalue / 25 + 1;
-
-                // save user answer in firebase
-                await Firestore.instance
-                    .collection('users')
-                    .document(user.uid)
-                    .collection("active_questions")
-                    .document(questionId)
-                    .setData({"answer": userOpinion}, merge: true);
                 // if answered second question
               } else {
                 partnerOpinion = _slidervalue / 25 + 1;
@@ -134,6 +126,14 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
                 Provider.of<Partner>(context, listen: false)
                     .joinWaitingRoom(userOpinion, partnerOpinion);
+
+                // save user answer in firebase
+                await Firestore.instance
+                    .collection('users')
+                    .document(user.uid)
+                    .collection("active_questions")
+                    .document(questionId)
+                    .setData({"answer": userOpinion}, merge: true);
               }
 
               _slidervalue = 50;
