@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:the_graey_area/models/category.dart';
 import 'package:async/async.dart';
 
 import 'models/active_question.dart';
+import 'models/message.dart';
 import 'models/question.dart';
 
 class DatabaseService {
@@ -132,6 +134,29 @@ class DatabaseService {
       }
     }
     return unpartneredQsID;
+  }
+
+  Stream<List<Message>> messagesinChat(String qid, String cid, String uid) {
+    return questionsCollection
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .collection('messages')
+        .orderBy(
+          'createdAt',
+          descending: true,
+        )
+        .snapshots()
+        .map((list) {
+      return list.documents.map((doc) {
+        return Message(
+          key: ValueKey(doc.documentID),
+          message: doc['text'],
+          username: doc['username'],
+          isMe: doc['userId'] == uid,
+        );
+      }).toList();
+    });
   }
 
   // send message

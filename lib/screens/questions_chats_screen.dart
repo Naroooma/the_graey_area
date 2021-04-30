@@ -3,8 +3,10 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/active_question.dart';
+import 'package:the_graey_area/models/category.dart';
 import 'package:the_graey_area/models/question.dart';
 import 'package:the_graey_area/providers/auth.dart';
 import 'package:the_graey_area/providers/partner.dart';
@@ -26,6 +28,15 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
     {'question': "MY NAME IS ITAIIIII", 'unanswered': 0}
   ];
 
+  Color correspondingColor(List<dynamic> _allCategories, String categoryName) {
+    var color;
+    var matched = _allCategories.where((item) => item.name == categoryName);
+    matched.forEach((item) {
+      color = HexColor(item.color);
+    });
+    return color;
+  }
+
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
@@ -41,6 +52,7 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
     FirebaseUser user = Provider.of<Auth>(context).user;
 
     List<dynamic> allQuestions = Provider.of<List<Question>>(context);
+    List<dynamic> allCategories = Provider.of<List<Category>>(context);
 
     return Scaffold(
       // appBar: _searchActive
@@ -183,6 +195,35 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                                   return SizedBox();
                                 },
                               ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.all(4),
+                              child: Wrap(
+                                  spacing: 10,
+                                  children: List<Widget>.generate(
+                                    allQuestions
+                                        .where((question) =>
+                                            question.id ==
+                                            partneredQuestions[i].id)
+                                        .toList()[0]
+                                        .questionCategories
+                                        .length,
+                                    (int index) {
+                                      return Icon(
+                                        Icons.circle,
+                                        color: correspondingColor(
+                                                allCategories,
+                                                allQuestions
+                                                    .where((question) =>
+                                                        question.id ==
+                                                        partneredQuestions[i]
+                                                            .id)
+                                                    .toList()[0]
+                                                    .questionCategories[index])
+                                            .withOpacity(0.8),
+                                      );
+                                    },
+                                  )),
                             ),
                           ],
                         ),

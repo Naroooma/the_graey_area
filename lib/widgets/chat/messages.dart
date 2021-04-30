@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/database.dart';
+import 'package:the_graey_area/models/message.dart';
 import 'package:the_graey_area/providers/auth.dart';
 
 import 'message_bubble.dart';
@@ -20,34 +21,21 @@ class Messages extends StatelessWidget {
     return user == null || user.uid == null
         ? CircularProgressIndicator()
         : StreamBuilder(
-            stream: Firestore.instance
-                .collection('questions')
-                .document(qID)
-                .collection('chats')
-                .document(chatID)
-                .collection('messages')
-                .orderBy(
-                  'createdAt',
-                  descending: true,
-                )
-                .snapshots(),
+            stream: DatabaseService().messagesinChat(qID, chatID, user.uid),
             builder: (ctx, chatSnapshot) {
               if (chatSnapshot.connectionState == ConnectionState.waiting) {
                 return Center(
                   child: CircularProgressIndicator(),
                 );
               }
+              List<Message> messagesList = chatSnapshot.data;
               DatabaseService().readMessage(qID, chatID, user.uid);
               DatabaseService().seenPartner(qID, chatID, user.uid);
-              final chatDocs = chatSnapshot.data.documents;
               return ListView.builder(
                 reverse: true,
-                itemCount: chatDocs.length,
+                itemCount: messagesList.length,
                 itemBuilder: (ctx, index) => MessageBubble(
-                  chatDocs[index]['text'],
-                  chatDocs[index]['userId'] == user.uid,
-                  chatDocs[index]['username'],
-                  key: ValueKey(chatDocs[index].documentID),
+                  messagesList[index],
                 ),
               );
             });
