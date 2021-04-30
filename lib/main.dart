@@ -18,7 +18,6 @@ import './screens/question_screen.dart';
 import './providers/categories.dart';
 import './providers/auth.dart';
 import 'providers/partner.dart';
-import 'providers/search.dart';
 import 'screens/questions_list_screen.dart';
 
 void main() {
@@ -74,9 +73,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider<Auth>(
           create: (_) => Auth(),
         ),
-        ChangeNotifierProvider<Search>(
-          create: (_) => Search(),
-        ),
+
         ChangeNotifierProvider<Partner>(
           create: (_) => Partner(),
         ),

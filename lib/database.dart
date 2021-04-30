@@ -72,8 +72,6 @@ class DatabaseService {
   }
 
   Stream<List<dynamic>> activeChatsforQ(String qid, String uid) {
-    print(qid);
-
     return usersCollection
         .document(uid)
         .collection('active_questions')

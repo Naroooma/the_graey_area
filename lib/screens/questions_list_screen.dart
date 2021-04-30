@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/category.dart';
 import 'package:the_graey_area/models/question.dart';
 import 'package:the_graey_area/providers/auth.dart';
-import 'package:the_graey_area/providers/search.dart';
 import 'package:the_graey_area/widgets/app_drawer.dart';
 
 import '../database.dart';
@@ -40,6 +39,11 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
   }
 
   AppBar buildSearchBar() {
+    _filter.addListener(() {
+      setState(() {
+        query = _filter.text;
+      });
+    });
     return AppBar(
       backgroundColor: Colors.grey[300],
       iconTheme: IconThemeData(
@@ -50,7 +54,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
         child: TextField(
           style: TextStyle(fontSize: 14, color: Theme.of(context).accentColor),
           decoration: InputDecoration(
-            labelText: 'Search Questions or Categories',
+            labelText: 'Search for Questions',
             floatingLabelBehavior: FloatingLabelBehavior.never,
           ),
           autocorrect: false,
@@ -104,12 +108,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     return matchQuestions;
   }
 
-  Widget _buildSearchResults() {
-    _filter.addListener(() {
-      setState(() {
-        query = _filter.text;
-      });
-    });
+  List _buildSearchResults() {
     List<dynamic> suggestionList = [];
     query.isEmpty
         ? suggestionList = matchQuestions
@@ -119,15 +118,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
             }),
           );
 
-    return Container(
-      color: Theme.of(context).primaryColor,
-      child: ListView.builder(
-        itemCount: suggestionList.length,
-        itemBuilder: (ctx, index) {
-          return QuestionTile(suggestionList[index], allCategories);
-        },
-      ),
-    );
+    return suggestionList;
   }
 
   @override
@@ -235,16 +226,24 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                 }
                 matchQuestions =
                     findMatchingQuestions(favCategories.data, allQuestions);
+
+                List searchQuestions;
+                if (_searchActive) {
+                  searchQuestions = _buildSearchResults();
+                }
                 return Center(
-                  child: _searchActive
-                      ? _buildSearchResults()
-                      : ListView.builder(
-                          itemCount: matchQuestions.length,
-                          itemBuilder: (ctx, index) {
-                            return QuestionTile(
-                                matchQuestions[index], allCategories);
-                          },
-                        ),
+                  child: ListView.builder(
+                    itemCount: _searchActive
+                        ? searchQuestions.length
+                        : matchQuestions.length,
+                    itemBuilder: (ctx, index) {
+                      return QuestionTile(
+                          _searchActive
+                              ? searchQuestions[index]
+                              : matchQuestions[index],
+                          allCategories);
+                    },
+                  ),
                 );
               },
             );
