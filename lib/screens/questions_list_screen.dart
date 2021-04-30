@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/category.dart';
 import 'package:the_graey_area/models/question.dart';
 import 'package:the_graey_area/providers/auth.dart';
-import 'package:the_graey_area/providers/questions.dart';
 import 'package:the_graey_area/providers/search.dart';
 import 'package:the_graey_area/widgets/app_drawer.dart';
 
@@ -85,6 +84,26 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     );
   }
 
+  List<dynamic> findMatchingQuestions(List favCategories, List allQuestions) {
+    List matchQuestions = [];
+    for (final question in allQuestions) {
+      for (final category in question.questionCategories) {
+        if (favCategories.contains(category)) {
+          matchQuestions.add(question);
+          break;
+        }
+      }
+    }
+
+    // removes duplicates using json
+    // matchQuestions = matchQuestions
+    //     .map((item) => jsonEncode(item))
+    //     .toSet()
+    //     .map((item) => jsonDecode(item))
+    //     .toList();
+    return matchQuestions;
+  }
+
   Widget _buildSearchResults() {
     _filter.addListener(() {
       setState(() {
@@ -140,7 +159,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
               .toList();
           return user == null || user.uid == null
               ? CircularProgressIndicator()
-              : StreamBuilder<List<dynamic>>(
+              : StreamBuilder(
                   stream: Provider.of<DatabaseService>(context)
                       .favCategories(user.uid),
                   builder: (context, favCategories) {
@@ -149,8 +168,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                       return CircularProgressIndicator();
                     }
                     matchQuestions =
-                        Provider.of<Questions>(context, listen: false)
-                            .matchQuestions(favCategories.data, allQuestions);
+                        findMatchingQuestions(favCategories.data, allQuestions);
 
                     return Scaffold(
                       appBar: _searchActive

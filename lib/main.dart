@@ -7,7 +7,6 @@ import 'package:the_graey_area/database.dart';
 import 'package:the_graey_area/home.dart';
 import 'package:the_graey_area/models/category.dart';
 import 'package:the_graey_area/models/question.dart';
-import 'package:the_graey_area/providers/questions.dart';
 import 'package:the_graey_area/screens/active_chats_screen.dart';
 import 'package:the_graey_area/screens/chat_screen.dart';
 import 'package:the_graey_area/screens/questions_chats_screen.dart';
@@ -72,9 +71,6 @@ class _MyAppState extends State<MyApp> {
         // ),
         ChangeNotifierProvider<Categories>(
           create: (_) => Categories(),
-        ),
-        ChangeNotifierProvider<Questions>(
-          create: (_) => Questions(),
         ),
         ChangeNotifierProvider<Auth>(
           create: (_) => Auth(),
