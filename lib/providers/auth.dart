@@ -10,10 +10,18 @@ class Auth with ChangeNotifier {
   AuthResult _authResult;
   FirebaseUser _firebaseUser;
 
+  get user {
+    return _firebaseUser;
+  }
+
   get isNewUser {
     // return _authResult.additionalUserInfo.isNewUser;
     return this._firebaseUser.metadata.creationTime ==
         this._firebaseUser.metadata.lastSignInTime;
+  }
+
+  void setUser(FirebaseUser user) {
+    this._firebaseUser = user;
   }
 
   Future<void> emailSignup(String email, String password) async {
@@ -73,5 +81,6 @@ class Auth with ChangeNotifier {
     } catch (a) {
       print('Sign Out Error');
     }
+    this._firebaseUser = null;
   }
 }

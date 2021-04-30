@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/category.dart';
 import 'package:the_graey_area/models/question.dart';
-import 'package:the_graey_area/providers/questions.dart';
-import 'package:the_graey_area/providers/search.dart';
+import 'package:the_graey_area/providers/auth.dart';
 import 'package:the_graey_area/widgets/app_drawer.dart';
 
 import '../database.dart';
@@ -33,7 +32,18 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
   String query = "";
   final TextEditingController _filter = new TextEditingController();
 
+  void rebuild(dynamic a) {
+    if (a == 'from back') {
+      setState(() {});
+    }
+  }
+
   AppBar buildSearchBar() {
+    _filter.addListener(() {
+      setState(() {
+        query = _filter.text;
+      });
+    });
     return AppBar(
       backgroundColor: Colors.grey[300],
       iconTheme: IconThemeData(
@@ -44,7 +54,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
         child: TextField(
           style: TextStyle(fontSize: 14, color: Theme.of(context).accentColor),
           decoration: InputDecoration(
-            labelText: 'Search Questions or Categories',
+            labelText: 'Search for Questions',
             floatingLabelBehavior: FloatingLabelBehavior.never,
           ),
           autocorrect: false,
@@ -78,39 +88,42 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     );
   }
 
-  Widget _buildSearchResults() {
-    _filter.addListener(() {
-      setState(() {
-        query = _filter.text;
-      });
-    });
+  List<dynamic> findMatchingQuestions(List favCategories, List allQuestions) {
+    List matchQuestions = [];
+    for (final question in allQuestions) {
+      for (final category in question.questionCategories) {
+        if (favCategories.contains(category)) {
+          matchQuestions.add(question);
+          break;
+        }
+      }
+    }
+
+    // removes duplicates using json
+    // matchQuestions = matchQuestions
+    //     .map((item) => jsonEncode(item))
+    //     .toSet()
+    //     .map((item) => jsonDecode(item))
+    //     .toList();
+    return matchQuestions;
+  }
+
+  List _buildSearchResults() {
     List<dynamic> suggestionList = [];
     query.isEmpty
         ? suggestionList = matchQuestions
         : suggestionList.addAll(
             allQuestions.where((question) {
-              return question['text']
-                  .toLowerCase()
-                  .contains(query.toLowerCase());
+              return question.text.toLowerCase().contains(query.toLowerCase());
             }),
           );
 
-    return Container(
-      color: Theme.of(context).primaryColor,
-      child: ListView.builder(
-        itemCount: suggestionList.length,
-        itemBuilder: (ctx, index) {
-          return QuestionTile(suggestionList[index], allCategories);
-        },
-      ),
-    );
+    return suggestionList;
   }
 
   @override
   Widget build(BuildContext context) {
-    print(Provider.of<Search>(context, listen: true).query);
-
-    FirebaseUser user = Provider.of<FirebaseUser>(context);
+    FirebaseUser user = Provider.of<Auth>(context).user;
 
     allQuestions = Provider.of<List<Question>>(context);
     allCategories = Provider.of<List<Category>>(context);
@@ -118,117 +131,126 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     var _screenSize = MediaQuery.of(context).size;
 
     // if user has logged out, close stream
-    return user == null || user.uid == null
-        ? CircularProgressIndicator()
-        : StreamBuilder<Object>(
-            stream:
-                Provider.of<DatabaseService>(context).activeQuestions(user.uid),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              List activeQuestions = snapshot.data;
-              allQuestions = allQuestions
-                  .where((doc) =>
-                      !activeQuestions.any((element) => element.id == doc.id))
-                  .toList();
-              return user == null || user.uid == null
-                  ? CircularProgressIndicator()
-                  : StreamBuilder<List<dynamic>>(
-                      stream: Provider.of<DatabaseService>(context)
-                          .favCategories(user.uid),
-                      builder: (context, favCategories) {
-                        if (favCategories.connectionState ==
-                            ConnectionState.waiting) {
-                          return CircularProgressIndicator();
-                        }
-                        matchQuestions = Provider.of<Questions>(context,
-                                listen: false)
-                            .matchQuestions(favCategories.data, allQuestions);
 
-                        return Scaffold(
-                          appBar: _searchActive
-                              ? buildSearchBar()
-                              : AppBar(
-                                  automaticallyImplyLeading: false,
-                                  title: Text(
-                                    "Questions",
-                                    style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                        fontFamily: 'PT_Serif'),
-                                  ),
-                                  backgroundColor: Colors.grey[300],
-                                  iconTheme: IconThemeData(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                  actions: [
-                                    SizedBox(
-                                      width: _screenSize.width / 20,
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _searchActive = !_searchActive;
-                                        });
-                                        // showSearch(
-                                        //     context: context,
-                                        //     delegate:
-                                        //         Search(_allQuestions, _matchQuestions, allCategories));
-                                      },
-                                      child: Icon(Icons.search, size: 30),
-                                    ),
-                                    SizedBox(
-                                      width: _screenSize.width / 20,
-                                    ),
-                                    GestureDetector(
-                                      child: Icon(Icons.menu,
-                                          size:
-                                              30), // change this size and style
-                                      onTap: () => _scaffoldKey.currentState
-                                          .openEndDrawer(),
-                                    ),
-                                    SizedBox(
-                                      width: _screenSize.width / 20,
-                                    ),
-                                  ],
-                                ),
-                          endDrawer: AppDrawer(context),
-                          key: _scaffoldKey,
-                          backgroundColor: Theme.of(context).primaryColor,
-                          body: RefreshIndicator(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            onRefresh: () async {
-                              setState(() {
-                                _force = true;
-                              });
-                            }, // don't call getData because of FutureBuilder
-                            child: Center(
-                              child: _searchActive
-                                  ? _buildSearchResults()
-                                  : ListView.builder(
-                                      itemCount: matchQuestions.length,
-                                      itemBuilder: (ctx, index) {
-                                        return QuestionTile(
-                                            matchQuestions[index],
-                                            allCategories);
-                                      },
-                                    ),
-                            ),
-                          ),
-                          floatingActionButton: FloatingActionButton(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            child: Icon(
-                              Icons.message,
-                              color: Theme.of(context).accentColor,
-                            ),
-                            onPressed: () => Navigator.pop(
-                                context, QuestionsChatsScreen.routeName),
-                          ),
-                        );
-                      });
-            });
+    return Scaffold(
+      appBar: _searchActive
+          ? buildSearchBar()
+          : AppBar(
+              automaticallyImplyLeading: false,
+              title: Text(
+                "Questions",
+                style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontFamily: 'PT_Serif'),
+              ),
+              backgroundColor: Colors.grey[300],
+              iconTheme: IconThemeData(
+                color: Theme.of(context).primaryColor,
+              ),
+              actions: [
+                SizedBox(
+                  width: _screenSize.width / 20,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _searchActive = !_searchActive;
+                    });
+                    // showSearch(
+                    //     context: context,
+                    //     delegate:
+                    //         Search(_allQuestions, _matchQuestions, allCategories));
+                  },
+                  child: Icon(Icons.search, size: 30),
+                ),
+                SizedBox(
+                  width: _screenSize.width / 20,
+                ),
+                GestureDetector(
+                  child:
+                      Icon(Icons.menu, size: 30), // change this size and style
+                  onTap: () => _scaffoldKey.currentState.openEndDrawer(),
+                ),
+                SizedBox(
+                  width: _screenSize.width / 20,
+                ),
+              ],
+            ),
+      endDrawer: AppDrawer(context),
+      key: _scaffoldKey,
+      backgroundColor: Theme.of(context).primaryColor,
+      floatingActionButton: FloatingActionButton(
+          backgroundColor: Theme.of(context).primaryColor,
+          child: Icon(
+            Icons.message,
+            color: Theme.of(context).accentColor,
+          ),
+          onPressed: () => Navigator.pushReplacementNamed(
+              context, QuestionsChatsScreen.routeName)
+          // .then((value) => rebuild(value)),
+          ),
+      body: RefreshIndicator(
+        backgroundColor: Theme.of(context).primaryColor,
+        onRefresh: () async {
+          setState(() {
+            _force = true;
+          });
+        }, // don't call getData because of FutureBuilder
+        child: StreamBuilder(
+          stream:
+              Provider.of<DatabaseService>(context).activeQuestions(user.uid),
+          builder: (context, snapshot) {
+            // if (snapshot.connectionState == ConnectionState.waiting) {
+            //   return Center(
+            //     child: CircularProgressIndicator(),
+            //   );
+            // }
+            //
+            if (snapshot.data == null) {
+              return CircularProgressIndicator();
+            }
+            List activeQuestions = snapshot.data;
+            allQuestions = allQuestions
+                .where((doc) =>
+                    !activeQuestions.any((element) => element.id == doc.id))
+                .toList();
+            return StreamBuilder(
+              stream:
+                  Provider.of<DatabaseService>(context).favCategories(user.uid),
+              builder: (context, favCategories) {
+                // if (favCategories.connectionState == ConnectionState.waiting) {
+                //   return Center(child: CircularProgressIndicator());
+                // }
+                if (favCategories.data == null) {
+                  return CircularProgressIndicator();
+                }
+                matchQuestions =
+                    findMatchingQuestions(favCategories.data, allQuestions);
+
+                List searchQuestions;
+                if (_searchActive) {
+                  searchQuestions = _buildSearchResults();
+                }
+                return Center(
+                  child: ListView.builder(
+                    itemCount: _searchActive
+                        ? searchQuestions.length
+                        : matchQuestions.length,
+                    itemBuilder: (ctx, index) {
+                      return QuestionTile(
+                          _searchActive
+                              ? searchQuestions[index]
+                              : matchQuestions[index],
+                          allCategories);
+                    },
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
   }
 }
 

@@ -74,7 +74,8 @@ class Partner with ChangeNotifier {
       // if match, create chat
       if (i.documentID != userID &&
           i['answer'] == lookingFor &&
-          i['looking_for'] == answer) {
+          i['looking_for'] == answer &&
+          i['chat'] == null) {
         await createChat(i.documentID);
         return;
       }

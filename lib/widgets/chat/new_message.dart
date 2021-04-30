@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/database.dart';
+import 'package:the_graey_area/providers/auth.dart';
 
 class NewMessage extends StatefulWidget {
   final qID;
@@ -16,6 +17,7 @@ class NewMessage extends StatefulWidget {
 class _NewMessageState extends State<NewMessage> {
   final _controller = new TextEditingController();
   var _enteredMessage = '';
+  static final textFieldKey = GlobalKey<FormState>();
 
   void _sendMessage(uid) async {
     FocusScope.of(context).unfocus();
@@ -41,7 +43,7 @@ class _NewMessageState extends State<NewMessage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<FirebaseUser>(context);
+    final user = Provider.of<Auth>(context).user;
     return Container(
       color: Theme.of(context).accentColor,
       margin: EdgeInsets.only(top: 8),
@@ -49,17 +51,21 @@ class _NewMessageState extends State<NewMessage> {
       child: Row(
         children: <Widget>[
           Expanded(
-            child: TextField(
-              controller: _controller,
-              textCapitalization: TextCapitalization.sentences,
-              autocorrect: true,
-              enableSuggestions: true,
-              decoration: InputDecoration(labelText: 'Send a message...'),
-              onChanged: (value) {
-                setState(() {
-                  _enteredMessage = value;
-                });
-              },
+            child: Form(
+              key: textFieldKey,
+              child: TextFormField(
+                style: TextStyle(color: Colors.white),
+                controller: _controller,
+                textCapitalization: TextCapitalization.sentences,
+                autocorrect: true,
+                enableSuggestions: true,
+                decoration: InputDecoration(labelText: 'Send a message...'),
+                onChanged: (value) {
+                  setState(() {
+                    _enteredMessage = value;
+                  });
+                },
+              ),
             ),
           ),
           IconButton(

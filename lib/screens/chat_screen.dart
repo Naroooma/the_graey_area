@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:the_graey_area/models/question.dart';
 import 'package:the_graey_area/widgets/app_drawer.dart';
 import 'package:the_graey_area/widgets/chat/new_message.dart';
+import 'package:the_graey_area/widgets/reqAutoText.dart';
 
 import '../widgets/chat/messages.dart';
 
@@ -20,11 +23,15 @@ class _ChatScreenState extends State<ChatScreen> {
     final qID = arguments[0];
     final chatID = arguments[1];
 
+    var _screenSize = MediaQuery.of(context).size;
+    var allQuestions = Provider.of<List<Question>>(context);
+    Question question =
+        allQuestions.where((element) => element.id == qID).toList()[0];
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        title: Text("Insert Question Text from database using ID"),
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
         ),
@@ -34,7 +41,7 @@ class _ChatScreenState extends State<ChatScreen> {
             size: 30,
             color: Theme.of(context).primaryColor,
           ),
-          onTap: () => Navigator.of(context).pop(),
+          onTap: () => Navigator.of(context).pop('from back'),
         ),
         actions: [
           GestureDetector(
@@ -51,6 +58,11 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Container(
         child: Column(
           children: <Widget>[
+            Container(
+              child: ReqAutoText(
+                  question.text, _screenSize, _screenSize.height / 7),
+              padding: EdgeInsets.all(20),
+            ),
             Expanded(
               child: Messages(qID, chatID),
             ),
