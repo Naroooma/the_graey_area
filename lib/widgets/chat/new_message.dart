@@ -17,6 +17,7 @@ class NewMessage extends StatefulWidget {
 class _NewMessageState extends State<NewMessage> {
   final _controller = new TextEditingController();
   var _enteredMessage = '';
+  static final textFieldKey = GlobalKey<FormState>();
 
   void _sendMessage(uid) async {
     FocusScope.of(context).unfocus();
@@ -50,17 +51,20 @@ class _NewMessageState extends State<NewMessage> {
       child: Row(
         children: <Widget>[
           Expanded(
-            child: TextField(
-              controller: _controller,
-              textCapitalization: TextCapitalization.sentences,
-              autocorrect: true,
-              enableSuggestions: true,
-              decoration: InputDecoration(labelText: 'Send a message...'),
-              onChanged: (value) {
-                setState(() {
-                  _enteredMessage = value;
-                });
-              },
+            child: Form(
+              key: textFieldKey,
+              child: TextFormField(
+                controller: _controller,
+                textCapitalization: TextCapitalization.sentences,
+                autocorrect: true,
+                enableSuggestions: true,
+                decoration: InputDecoration(labelText: 'Send a message...'),
+                onChanged: (value) {
+                  setState(() {
+                    _enteredMessage = value;
+                  });
+                },
+              ),
             ),
           ),
           IconButton(
