@@ -62,7 +62,7 @@ class _ChatScreenState extends State<ChatScreen> {
             Container(
               child: ReqAutoText(
                   question.text, _screenSize, _screenSize.height / 7),
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(20),
             ),
             Expanded(
               child: Messages(qID, chatID),

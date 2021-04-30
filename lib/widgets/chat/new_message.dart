@@ -54,6 +54,7 @@ class _NewMessageState extends State<NewMessage> {
             child: Form(
               key: textFieldKey,
               child: TextFormField(
+                style: TextStyle(color: Colors.white),
                 controller: _controller,
                 textCapitalization: TextCapitalization.sentences,
                 autocorrect: true,
