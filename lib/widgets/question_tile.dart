@@ -21,18 +21,23 @@ class QuestionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var _screenheight =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    var _screenwidth = MediaQuery.of(context).size.width;
+
     return InkWell(
       onTap: () {
         Navigator.of(context)
             .pushNamed(QuestionScreen.routeName, arguments: _question);
       },
       child: Card(
-        margin: EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+        margin: EdgeInsets.symmetric(
+            vertical: _screenheight * 0.009, horizontal: _screenwidth * 0.025),
         child: Column(
           children: [
             Container(
-              height: 90,
-              padding: EdgeInsets.all(12),
+              height: _screenheight * 0.11,
+              padding: EdgeInsets.all(_screenheight * 0.015),
               alignment: Alignment.center,
               child: AutoSizeText(
                 _question.text,
@@ -41,14 +46,14 @@ class QuestionTile extends StatelessWidget {
                   color: Theme.of(context).primaryColor,
                   fontFamily: 'PT_Serif',
                   fontStyle: FontStyle.italic,
-                  fontSize: 100,
+                  fontSize: _screenheight * 1, // max size (fits to boundaries)
                 ),
               ),
             ),
             Container(
-              margin: EdgeInsets.all(4),
+              margin: EdgeInsets.all(_screenheight * 0.01),
               child: Wrap(
-                  spacing: 20,
+                  spacing: _screenheight * 0.025,
                   children: List<Widget>.generate(
                     _question.questionCategories.length,
                     (int index) {

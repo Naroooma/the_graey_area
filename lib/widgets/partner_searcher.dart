@@ -15,6 +15,10 @@ class PartnerSearcher extends StatelessWidget {
   Widget build(BuildContext context) {
     var _screenSize = MediaQuery.of(context).size;
 
+    var _screenheight =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    var _screenwidth = MediaQuery.of(context).size.width;
+
     return FutureBuilder(
       future: Provider.of<Partner>(context, listen: false)
           .searchForPartner(answer, lookingFor),
@@ -24,32 +28,34 @@ class PartnerSearcher extends StatelessWidget {
             return Column(children: [
               CircularProgressIndicator(),
               SizedBox(
-                height: _screenSize.height / 15,
+                height: _screenheight * 0.07,
               ),
               ReqAutoText(
-                  'No Match Found Yet', _screenSize, _screenSize.height / 17),
+                  'No Match Found Yet', _screenSize, _screenheight * 0.06),
               SizedBox(
-                height: _screenSize.height / 35,
+                height: _screenheight * 0.025,
               ),
               ReqAutoText('Meanwhile, answer more questions!', _screenSize,
-                  _screenSize.height / 10)
+                  _screenheight * 0.11)
             ]);
           } else if (provider.chatID != null) {
             return Column(
               children: [
                 ReqAutoText('Match found, press button to chat!', _screenSize,
-                    _screenSize.height / 9),
+                    _screenheight * 0.12),
                 SizedBox(
-                  height: _screenSize.height / 20,
+                  height: _screenheight * 0.06,
                 ),
                 ElevatedButton(
                     child: Container(
-                      height: 70,
-                      width: 70,
+                      height: (_screenSize.height -
+                              MediaQuery.of(context).padding.top) *
+                          0.08,
+                      width: _screenSize.width * 0.15,
                       child: Icon(
                         Icons.arrow_forward,
                         color: Theme.of(context).primaryColor,
-                        size: 40,
+                        size: _screenSize.width * 0.1,
                       ),
                     ),
                     style: ButtonStyle(

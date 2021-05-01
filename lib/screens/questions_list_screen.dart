@@ -38,7 +38,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     }
   }
 
-  AppBar buildSearchBar() {
+  AppBar buildSearchBar(_screenheight, _screenwidth) {
     _filter.addListener(() {
       setState(() {
         query = _filter.text;
@@ -50,9 +50,13 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
         color: Theme.of(context).primaryColor,
       ),
       title: Container(
-        height: 40,
+        height: _screenheight * 0.05,
         child: TextField(
-          style: TextStyle(fontSize: 14, color: Theme.of(context).accentColor),
+          textAlign: TextAlign.left,
+          textAlignVertical: TextAlignVertical.center,
+          style: TextStyle(
+              fontSize: _screenheight * 0.015,
+              color: Theme.of(context).accentColor),
           decoration: InputDecoration(
             labelText: 'Search for Questions',
             floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -72,17 +76,21 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
         },
         child: Icon(
           Icons.arrow_back,
-          size: 30,
+          size: _screenheight * 0.035,
           color: Theme.of(context).primaryColor,
         ),
       ),
       actions: [
+        SizedBox(
+          width: _screenheight * 0.015,
+        ),
         GestureDetector(
-          child: Icon(Icons.menu, size: 30), // change this size and style
+          child: Icon(Icons.menu,
+              size: _screenheight * 0.035), // change this size and style
           onTap: () => _scaffoldKey.currentState.openEndDrawer(),
         ),
         SizedBox(
-          width: 20,
+          width: _screenheight * 0.025,
         ),
       ],
     );
@@ -128,13 +136,15 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     allQuestions = Provider.of<List<Question>>(context);
     allCategories = Provider.of<List<Category>>(context);
 
-    var _screenSize = MediaQuery.of(context).size;
+    var _screenheight =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    var _screenwidth = MediaQuery.of(context).size.width;
 
     // if user has logged out, close stream
 
     return Scaffold(
       appBar: _searchActive
-          ? buildSearchBar()
+          ? buildSearchBar(_screenheight, _screenwidth)
           : AppBar(
               automaticallyImplyLeading: false,
               title: Text(
@@ -149,7 +159,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
               ),
               actions: [
                 SizedBox(
-                  width: _screenSize.width / 20,
+                  width: _screenheight * 0.025,
                 ),
                 GestureDetector(
                   onTap: () {
@@ -161,18 +171,19 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                     //     delegate:
                     //         Search(_allQuestions, _matchQuestions, allCategories));
                   },
-                  child: Icon(Icons.search, size: 30),
+                  child: Icon(Icons.search, size: _screenheight * 0.035),
                 ),
                 SizedBox(
-                  width: _screenSize.width / 20,
+                  width: _screenheight * 0.025,
                 ),
                 GestureDetector(
-                  child:
-                      Icon(Icons.menu, size: 30), // change this size and style
+                  child: Icon(Icons.menu,
+                      size:
+                          _screenheight * 0.035), // change this size and style
                   onTap: () => _scaffoldKey.currentState.openEndDrawer(),
                 ),
                 SizedBox(
-                  width: _screenSize.width / 20,
+                  width: _screenheight * 0.025,
                 ),
               ],
             ),

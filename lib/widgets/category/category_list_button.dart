@@ -54,7 +54,7 @@ class _CategoryListButtonState extends State<CategoryListButton> {
                 style: TextStyle(
                   color: Theme.of(context).accentColor,
                   fontFamily: "PT_Serif",
-                  fontSize: 100, // max size,
+                  fontSize: _screenheight * 1, // max size (fits to boundaries)
                 ),
               ),
             ),

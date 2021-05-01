@@ -23,6 +23,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final qID = arguments[0];
     final chatID = arguments[1];
 
+    var _screenheight =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     var _screenSize = MediaQuery.of(context).size;
     var allQuestions = Provider.of<List<Question>>(context);
     Question question =
@@ -38,18 +40,19 @@ class _ChatScreenState extends State<ChatScreen> {
         leading: GestureDetector(
           child: Icon(
             Icons.arrow_back,
-            size: 30,
+            size: _screenheight * 0.035,
             color: Theme.of(context).primaryColor,
           ),
           onTap: () => Navigator.of(context).pop('from back'),
         ),
         actions: [
           GestureDetector(
-            child: Icon(Icons.menu, size: 30), // change this size and style
+            child: Icon(Icons.menu,
+                size: _screenheight * 0.035), // change this size and style
             onTap: () => _scaffoldKey.currentState.openEndDrawer(),
           ),
           SizedBox(
-            width: 20,
+            width: _screenheight * 0.025,
           ),
         ],
       ),
@@ -59,9 +62,8 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: <Widget>[
             Container(
-              child: ReqAutoText(
-                  question.text, _screenSize, _screenSize.height / 7),
-              padding: EdgeInsets.all(20),
+              child: ReqAutoText(question.text, _screenSize, _screenheight / 6),
+              padding: EdgeInsets.all(_screenheight * 0.025),
             ),
             Expanded(
               child: Messages(qID, chatID),

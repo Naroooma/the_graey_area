@@ -42,7 +42,9 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
       }
     }
 
-    var _screenSize = MediaQuery.of(context).size;
+    var _screenheight =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    var _screenwidth = MediaQuery.of(context).size.width;
 
     FirebaseUser user = Provider.of<Auth>(context).user;
 
@@ -65,15 +67,13 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
           color: Theme.of(context).primaryColor,
         ),
         actions: [
-          SizedBox(
-            width: _screenSize.width / 20,
-          ),
           GestureDetector(
-            child: Icon(Icons.menu, size: 30), // change this size and style
+            child: Icon(Icons.menu,
+                size: _screenheight * 0.035), // change this size and style
             onTap: () => _scaffoldKey.currentState.openEndDrawer(),
           ),
           SizedBox(
-            width: _screenSize.width / 20,
+            width: _screenheight * 0.025,
           ),
         ],
       ),
@@ -87,7 +87,10 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
           builder: (context, snapshot) {
             if (snapshot.data == null) {
               return Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  valueColor: new AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).primaryColor),
+                ),
               );
             }
             // partneredQuestions are the ones that have chats
@@ -100,7 +103,12 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                 builder: (context, unPartneredSnapshot) {
                   if (unPartneredSnapshot.connectionState ==
                       ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return Center(
+                      child: CircularProgressIndicator(
+                        valueColor: new AlwaysStoppedAnimation<Color>(
+                            Theme.of(context).primaryColor),
+                      ),
+                    );
                   }
                   List unPartneredIDList = unPartneredSnapshot.data;
 
@@ -115,7 +123,7 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                     itemBuilder: (context, i) => Column(
                       children: [
                         Divider(
-                          height: 10.0,
+                          height: _screenheight * 0.01,
                         ),
                         ListTile(
                           title: InkWell(
@@ -130,7 +138,8 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                               // display matching text for docID
 
                               style: TextStyle(
-                                  fontFamily: 'PT_Serif', fontSize: 20),
+                                  fontFamily: 'PT_Serif',
+                                  fontSize: _screenheight * 0.025),
                             ),
                             onTap: () {
                               Navigator.pushNamed(
@@ -163,9 +172,9 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                           ),
                         ),
                         Container(
-                          margin: EdgeInsets.all(4),
+                          margin: EdgeInsets.all(_screenheight * 0.01),
                           child: Wrap(
-                              spacing: 10,
+                              spacing: _screenheight * 0.025,
                               children: List<Widget>.generate(
                                 allQuestions
                                     .where((question) =>
