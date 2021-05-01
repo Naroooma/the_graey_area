@@ -85,7 +85,8 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
           stream:
               Provider.of<DatabaseService>(context).activeQuestions(user.uid),
           builder: (context, snapshot) {
-            if (snapshot.data == null) {
+            if (snapshot.data == null ||
+                snapshot.connectionState == ConnectionState.waiting) {
               return Center(
                 child: CircularProgressIndicator(
                   valueColor: new AlwaysStoppedAnimation<Color>(

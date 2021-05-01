@@ -77,7 +77,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       color: Theme.of(context).primaryColor,
                       fontFamily: 'PT_Serif',
                       fontStyle: FontStyle.italic,
-                      fontSize: _screenheight * 0.09,
+                      fontSize: _screenheight * 0.08,
                     ),
                   ),
                   SizedBox(
