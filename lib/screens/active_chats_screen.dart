@@ -104,8 +104,13 @@ class _ActiveChatsScreenState extends State<ActiveChatsScreen> {
             child: StreamBuilder<List<dynamic>>(
                 stream: DatabaseService().activeChatsforQ(questionID, user.uid),
                 builder: (context, snapshot) {
-                  if (snapshot.data == null) {
-                    return CircularProgressIndicator();
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        valueColor: new AlwaysStoppedAnimation<Color>(
+                            Theme.of(context).primaryColor),
+                      ),
+                    );
                   }
                   List activeChats = snapshot.data;
                   return ListView.builder(
