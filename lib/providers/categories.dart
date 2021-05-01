@@ -30,4 +30,8 @@ class Categories with ChangeNotifier {
     _favCategories.removeWhere((item) => item == value);
     notifyListeners();
   }
+
+  bool inCategory(var value) {
+    return _favCategories.contains(value);
+  }
 }
