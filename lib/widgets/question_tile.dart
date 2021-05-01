@@ -61,8 +61,9 @@ class QuestionTile extends StatelessWidget {
                         backgroundColor: correspondingColor(allCategories,
                                 _question.questionCategories[index])
                             .withOpacity(0.8),
-                        labelStyle:
-                            TextStyle(color: Theme.of(context).primaryColor),
+                        labelStyle: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: _screenheight * 0.017),
                         label: Text(
                           _question.questionCategories[index],
                         ),
