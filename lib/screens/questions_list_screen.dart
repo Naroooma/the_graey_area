@@ -13,8 +13,6 @@ import 'questions_chats_screen.dart';
 class QuestionsListScreen extends StatefulWidget {
   static const routeName = '/questions-list-screen';
 
-  final List<String> list = List.generate(10, (index) => "Text $index");
-
   @override
   _QuestionsListScreenState createState() => _QuestionsListScreenState();
 }
@@ -26,7 +24,6 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
   List<dynamic> matchQuestions = [];
 
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
-  bool _force = false;
 
   bool _searchActive = false;
   String query = "";
@@ -106,13 +103,6 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
         }
       }
     }
-
-    // removes duplicates using json
-    // matchQuestions = matchQuestions
-    //     .map((item) => jsonEncode(item))
-    //     .toSet()
-    //     .map((item) => jsonDecode(item))
-    //     .toList();
     return matchQuestions;
   }
 
@@ -200,66 +190,48 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
               context, QuestionsChatsScreen.routeName)
           // .then((value) => rebuild(value)),
           ),
-      body: RefreshIndicator(
-        backgroundColor: Theme.of(context).primaryColor,
-        onRefresh: () async {
-          setState(() {
-            _force = true;
-          });
-        }, // don't call getData because of FutureBuilder
-        child: StreamBuilder(
-          stream:
-              Provider.of<DatabaseService>(context).activeQuestions(user.uid),
-          builder: (context, snapshot) {
-            // if (snapshot.connectionState == ConnectionState.waiting) {
-            //   return Center(
-            //     child: CircularProgressIndicator(),
-            //   );
-            // }
-            //
-            if (snapshot.data == null) {
-              return CircularProgressIndicator();
-            }
-            List activeQuestions = snapshot.data;
-            allQuestions = allQuestions
-                .where((doc) =>
-                    !activeQuestions.any((element) => element.id == doc.id))
-                .toList();
-            return StreamBuilder(
-              stream:
-                  Provider.of<DatabaseService>(context).favCategories(user.uid),
-              builder: (context, favCategories) {
-                // if (favCategories.connectionState == ConnectionState.waiting) {
-                //   return Center(child: CircularProgressIndicator());
-                // }
-                if (favCategories.data == null) {
-                  return CircularProgressIndicator();
-                }
-                matchQuestions =
-                    findMatchingQuestions(favCategories.data, allQuestions);
+      body: StreamBuilder(
+        stream: Provider.of<DatabaseService>(context).activeQuestions(user.uid),
+        builder: (context, snapshot) {
+          if (snapshot.data == null) {
+            return CircularProgressIndicator();
+          }
+          List activeQuestions = snapshot.data;
+          allQuestions = allQuestions
+              .where((doc) =>
+                  !activeQuestions.any((element) => element.id == doc.id))
+              .toList();
+          return StreamBuilder(
+            stream:
+                Provider.of<DatabaseService>(context).favCategories(user.uid),
+            builder: (context, favCategories) {
+              if (favCategories.data == null) {
+                return CircularProgressIndicator();
+              }
+              matchQuestions =
+                  findMatchingQuestions(favCategories.data, allQuestions);
 
-                List searchQuestions;
-                if (_searchActive) {
-                  searchQuestions = _buildSearchResults();
-                }
-                return Center(
-                  child: ListView.builder(
-                    itemCount: _searchActive
-                        ? searchQuestions.length
-                        : matchQuestions.length,
-                    itemBuilder: (ctx, index) {
-                      return QuestionTile(
-                          _searchActive
-                              ? searchQuestions[index]
-                              : matchQuestions[index],
-                          allCategories);
-                    },
-                  ),
-                );
-              },
-            );
-          },
-        ),
+              List searchQuestions;
+              if (_searchActive) {
+                searchQuestions = _buildSearchResults();
+              }
+              return Center(
+                child: ListView.builder(
+                  itemCount: _searchActive
+                      ? searchQuestions.length
+                      : matchQuestions.length,
+                  itemBuilder: (ctx, index) {
+                    return QuestionTile(
+                        _searchActive
+                            ? searchQuestions[index]
+                            : matchQuestions[index],
+                        allCategories);
+                  },
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
