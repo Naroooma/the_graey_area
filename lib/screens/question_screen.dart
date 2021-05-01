@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +7,7 @@ import 'package:the_graey_area/widgets/partner_searcher.dart';
 import 'package:the_graey_area/widgets/reqAutoText.dart';
 
 import '../widgets/app_drawer.dart';
+import '../database.dart';
 
 class QuestionScreen extends StatefulWidget {
   static const routeName = '/question-screen';
@@ -140,12 +140,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
                     .joinWaitingRoom(userOpinion, partnerOpinion);
 
                 // save user answer in firebase
-                await Firestore.instance
-                    .collection('users')
-                    .document(user.uid)
-                    .collection("active_questions")
-                    .document(questionId)
-                    .setData({"answer": userOpinion}, merge: true);
+                await DatabaseService()
+                    .sendQuestionAnswer(questionId, user.uid, userOpinion);
               }
 
               _slidervalue = 50;

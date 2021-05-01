@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/category.dart';
@@ -87,15 +85,8 @@ class CategoryPickerScreen extends StatelessWidget {
                                   ),
                                 );
                               } else {
-                                FirebaseUser user =
-                                    await FirebaseAuth.instance.currentUser();
-
-                                await Firestore.instance
-                                    .collection('users')
-                                    .document(user.uid)
-                                    .updateData({
-                                  'fav_categories': provider.getFavCategories
-                                });
+                                await DatabaseService().updateFavCategories(
+                                    user.uid, provider.getFavCategories);
 
                                 Navigator.pushNamed(
                                     context, QuestionsChatsScreen.routeName);

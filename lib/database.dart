@@ -47,6 +47,13 @@ class DatabaseService {
     });
   }
 
+  Future<void> updateFavCategories(String uid, List favCats) {
+    return Firestore.instance
+        .collection('users')
+        .document(uid)
+        .updateData({'fav_categories': favCategories});
+  }
+
   Stream<List<Question>> get allQuestions {
     return questionsCollection.snapshots().map((list) {
       return list.documents
@@ -110,6 +117,15 @@ class DatabaseService {
     return partner[0].documentID;
   }
 
+  Future<void> sendQuestionAnswer(String qid, String uid, double userOpinion) {
+    return Firestore.instance
+        .collection('users')
+        .document(uid)
+        .collection("active_questions")
+        .document(qid)
+        .setData({"answer": userOpinion}, merge: true);
+  }
+
   Future<bool> inWaitingRoom(String qid, String uid) async {
     DocumentSnapshot waitingRoomEntry = await Firestore.instance
         .collection('questions')
@@ -156,7 +172,23 @@ class DatabaseService {
     });
   }
 
-  // send message
+  void sendMessage(String qid, String cid, String uid, String username,
+      String enteredMessage) async {
+    Firestore.instance
+        .collection('questions')
+        .document(qid)
+        .collection('chats')
+        .document(cid)
+        .collection('messages')
+        .add({
+      'text': enteredMessage,
+      'createdAt': Timestamp.now(),
+      'userId': uid,
+      'username': username,
+    });
+  }
+
+  // update message counter
   void newMessage(String qid, String cid, String uid) {
     questionsCollection
         .document(qid)
