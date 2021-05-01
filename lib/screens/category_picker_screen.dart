@@ -36,7 +36,6 @@ class CategoryPickerScreen extends StatelessWidget {
             } else {
               Provider.of<Categories>(context, listen: false)
                   .initCategory(snapshot.data);
-              print('WAAAA');
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -56,7 +55,6 @@ class CategoryPickerScreen extends StatelessWidget {
                   Consumer<Categories>(
                     builder: (context, provider, child) {
                       // initialize provider to match favCategories from firebase
-                      print(provider.getFavCategories);
                       return Column(
                         children: [
                           Padding(
