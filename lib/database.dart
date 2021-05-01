@@ -51,7 +51,7 @@ class DatabaseService {
     return Firestore.instance
         .collection('users')
         .document(uid)
-        .updateData({'fav_categories': favCategories});
+        .updateData({'fav_categories': favCats});
   }
 
   Stream<List<Question>> get allQuestions {
