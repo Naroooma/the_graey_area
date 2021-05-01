@@ -54,14 +54,15 @@ class _QuestionScreenState extends State<QuestionScreen> {
     }
   }
 
-  Widget answerTile(_screenSize, questionId) {
+  Widget answerTile(_screenSize, questionId, context) {
     return Container(
       key: ValueKey<String>(text),
       child: Column(
         children: [
           ReqAutoText(text, _screenSize, _screenSize.height / 25),
           SizedBox(
-            height: 20,
+            height: (_screenSize.height - MediaQuery.of(context).padding.top) *
+                0.03,
           ),
           Slider(
             min: 0,
@@ -78,26 +79,37 @@ class _QuestionScreenState extends State<QuestionScreen> {
             inactiveColor: Theme.of(context).accentColor.withOpacity(0.5),
           ),
           Container(
-            width: 320,
+            width: _screenSize.width * 0.75,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ReqAutoText("No", _screenSize, 50),
-                ReqAutoText("Yes", _screenSize, 50)
+                ReqAutoText(
+                    "No",
+                    _screenSize,
+                    (_screenSize.height - MediaQuery.of(context).padding.top) *
+                        0.06),
+                ReqAutoText(
+                    "Yes",
+                    _screenSize,
+                    (_screenSize.height - MediaQuery.of(context).padding.top) *
+                        0.06),
               ],
             ),
           ),
           SizedBox(
-            height: 40,
-          ),
+              height:
+                  (_screenSize.height - MediaQuery.of(context).padding.top) *
+                      0.03),
           ElevatedButton(
             child: Container(
-              height: 70,
-              width: 70,
+              height:
+                  (_screenSize.height - MediaQuery.of(context).padding.top) *
+                      0.08,
+              width: _screenSize.width * 0.15,
               child: Icon(
                 Icons.arrow_forward,
                 color: Theme.of(context).primaryColor,
-                size: 40,
+                size: _screenSize.width * 0.1,
               ),
             ),
             style: ButtonStyle(
@@ -157,6 +169,10 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var _screenheight =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    var _screenwidth = MediaQuery.of(context).size.width;
+
     final question = ModalRoute.of(context).settings.arguments as Question;
     final questionId = question.id;
     var _screenSize = MediaQuery.of(context).size;
@@ -173,37 +189,38 @@ class _QuestionScreenState extends State<QuestionScreen> {
         leading: GestureDetector(
           child: Icon(
             Icons.arrow_back,
-            size: 30,
+            size: _screenheight * 0.035,
             color: Theme.of(context).primaryColor,
           ),
           onTap: () => Navigator.of(context).pop('from back'),
         ),
         actions: [
           GestureDetector(
-            child: Icon(Icons.menu, size: 30), // change this size and style
+            child: Icon(Icons.menu,
+                size: _screenheight * 0.035), // change this size and style
             onTap: () => _scaffoldKey.currentState.openEndDrawer(),
           ),
           SizedBox(
-            width: 20,
+            width: _screenheight * 0.025,
           ),
         ],
       ),
       endDrawer: AppDrawer(context),
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(_screenSize.width / 15),
+          padding: EdgeInsets.all(_screenwidth * 0.08),
           child: Column(
             children: [
-              ReqAutoText(question.text, _screenSize, _screenSize.height / 3),
+              ReqAutoText(question.text, _screenSize, _screenheight * 0.35),
               SizedBox(
-                height: 40,
+                height: _screenheight * 0.05,
               ),
               searching
                   ? PartnerSearcher(questionId, userOpinion, partnerOpinion)
                   : AnimatedSwitcher(
                       duration: const Duration(milliseconds: 500),
                       transitionBuilder: slideAnimation,
-                      child: answerTile(_screenSize, questionId)),
+                      child: answerTile(_screenSize, questionId, context)),
             ],
           ),
         ),

@@ -20,6 +20,10 @@ class CategoryPickerScreen extends StatelessWidget {
 
     List<dynamic> allCategories = Provider.of<List<Category>>(context);
 
+    var _screenheight =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    var _screenwidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: Center(
@@ -30,11 +34,13 @@ class CategoryPickerScreen extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
             } else {
+              Provider.of<Categories>(context, listen: false)
+                  .initCategory(snapshot.data);
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: 50,
+                    height: _screenheight * 0.08,
                   ),
                   Text(
                     "Let's Talk About",
@@ -43,19 +49,18 @@ class CategoryPickerScreen extends StatelessWidget {
                       color: Theme.of(context).accentColor,
                       fontFamily: 'PT_Serif',
                       fontStyle: FontStyle.italic,
-                      fontSize: 75,
+                      fontSize: _screenheight * 0.09,
                     ),
                   ),
                   Consumer<Categories>(
                     builder: (context, provider, child) {
                       // initialize provider to match favCategories from firebase
-                      provider.initCategory(snapshot.data);
                       return Column(
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 50,
-                              vertical: 10,
+                              horizontal: _screenwidth * 0.02,
+                              vertical: _screenheight * 0.01,
                             ),
                             child: Text(
                               provider.getFavCategories.length < 3
@@ -65,7 +70,7 @@ class CategoryPickerScreen extends StatelessWidget {
                               style: TextStyle(
                                 color: Theme.of(context).accentColor,
                                 fontFamily: 'PT_Serif',
-                                fontSize: 20,
+                                fontSize: _screenheight * 0.025,
                               ),
                             ),
                           ),
@@ -113,6 +118,9 @@ class CategoryPickerScreen extends StatelessWidget {
                         ],
                       );
                     },
+                  ),
+                  SizedBox(
+                    height: _screenheight * 0.02,
                   ),
                   Expanded(
                     child: CategoryList(

@@ -7,9 +7,8 @@ import '../../providers/categories.dart';
 // ignore: must_be_immutable
 class CategoryListButton extends StatefulWidget {
   final catDoc;
-  bool _selection;
 
-  CategoryListButton(this.catDoc, this._selection);
+  CategoryListButton(this.catDoc);
 
   @override
   _CategoryListButtonState createState() => _CategoryListButtonState();
@@ -18,13 +17,18 @@ class CategoryListButton extends StatefulWidget {
 class _CategoryListButtonState extends State<CategoryListButton> {
   @override
   Widget build(BuildContext context) {
+    var _screenheight =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    var _screenwidth = MediaQuery.of(context).size.width;
+
     return Material(
       color: HexColor(widget.catDoc.color).withOpacity(0.8),
       child: InkResponse(
         onTap: () {
           setState(() {
-            widget._selection = !widget._selection;
-            if (widget._selection == true) {
+            if (Provider.of<Categories>(context, listen: false)
+                    .inCategory(widget.catDoc.name) ==
+                false) {
               Provider.of<Categories>(context, listen: false)
                   .addCategory(widget.catDoc.name);
             } else {
@@ -35,12 +39,13 @@ class _CategoryListButtonState extends State<CategoryListButton> {
         },
         child: Container(
           decoration: BoxDecoration(
-            border: widget._selection
-                ? Border.all(width: 5, color: Colors.white)
+            border: Provider.of<Categories>(context, listen: false)
+                    .inCategory(widget.catDoc.name)
+                ? Border.all(width: _screenwidth * 0.01, color: Colors.white)
                 : null,
           ),
-          height: 60,
-          padding: EdgeInsets.all(5),
+          height: _screenheight * 0.075,
+          padding: EdgeInsets.all(_screenheight * 0.007),
           child: Center(
             child: FittedBox(
               fit: BoxFit.fitWidth,
@@ -49,7 +54,7 @@ class _CategoryListButtonState extends State<CategoryListButton> {
                 style: TextStyle(
                   color: Theme.of(context).accentColor,
                   fontFamily: "PT_Serif",
-                  fontSize: 100, // max size,
+                  fontSize: _screenheight * 1, // max size (fits to boundaries)
                 ),
               ),
             ),

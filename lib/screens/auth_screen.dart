@@ -58,10 +58,12 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     var _screenSize = MediaQuery.of(context).size;
+    var _screenheight = _screenSize.height - MediaQuery.of(context).padding.top;
+
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(_screenSize.width / 20),
+          padding: EdgeInsets.all(_screenheight * 0.04),
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(
@@ -75,11 +77,11 @@ class _AuthScreenState extends State<AuthScreen> {
                       color: Theme.of(context).primaryColor,
                       fontFamily: 'PT_Serif',
                       fontStyle: FontStyle.italic,
-                      fontSize: _screenSize.width / 5.5,
+                      fontSize: _screenheight * 0.09,
                     ),
                   ),
                   SizedBox(
-                    height: _screenSize.width / 20,
+                    height: _screenheight * 0.025,
                   ),
                   Text(
                     _isLogin ? 'Log In' : 'Sign Up',
@@ -87,11 +89,11 @@ class _AuthScreenState extends State<AuthScreen> {
                       color: Theme.of(context).primaryColor,
                       fontFamily: 'PT_Serif',
                       fontWeight: FontWeight.bold,
-                      fontSize: _screenSize.width / 20,
+                      fontSize: _screenheight * 0.025,
                     ),
                   ),
                   SizedBox(
-                    height: _screenSize.width / 15,
+                    height: _screenheight * 0.04,
                   ),
                   TextFormField(
                     style: TextStyle(color: Theme.of(context).accentColor),
@@ -115,7 +117,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     },
                   ),
                   SizedBox(
-                    height: _screenSize.width / 40,
+                    height: _screenheight * 0.015,
                   ),
                   if (!_isLogin)
                     TextFormField(
@@ -140,7 +142,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                   if (!_isLogin)
                     SizedBox(
-                      height: _screenSize.width / 40,
+                      height: _screenheight * 0.015,
                     ),
                   TextFormField(
                     key: ValueKey('password'),
@@ -161,7 +163,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     },
                   ),
                   SizedBox(
-                    height: _screenSize.width / 40,
+                    height: _screenheight * 0.025,
                   ),
                   Align(
                     alignment: Alignment.centerRight,
@@ -180,7 +182,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                   ),
                   SizedBox(
-                    height: _screenSize.width / 40,
+                    height: _screenheight * 0.025,
                   ),
                   TextButton(
                     style: ButtonStyle(
@@ -189,7 +191,8 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       shape: MaterialStateProperty.all<OutlinedBorder>(
                         RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0),
+                          borderRadius:
+                              BorderRadius.circular(_screenheight * 0.025),
                         ),
                       ),
                     ),
