@@ -23,8 +23,9 @@ class _CategoryListButtonState extends State<CategoryListButton> {
       child: InkResponse(
         onTap: () {
           setState(() {
-            widget._selection = !widget._selection;
-            if (widget._selection == true) {
+            if (Provider.of<Categories>(context, listen: false)
+                    .inCategory(widget.catDoc.name) ==
+                false) {
               Provider.of<Categories>(context, listen: false)
                   .addCategory(widget.catDoc.name);
             } else {
@@ -35,7 +36,8 @@ class _CategoryListButtonState extends State<CategoryListButton> {
         },
         child: Container(
           decoration: BoxDecoration(
-            border: widget._selection
+            border: Provider.of<Categories>(context, listen: false)
+                    .inCategory(widget.catDoc.name)
                 ? Border.all(width: 5, color: Colors.white)
                 : null,
           ),
