@@ -58,7 +58,7 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          "Chats",
+          "Active Questions",
           style: TextStyle(
               color: Theme.of(context).primaryColor, fontFamily: 'PT_Serif'),
         ),
@@ -119,89 +119,108 @@ class _QuestionsChatsScreenState extends State<QuestionsChatsScreen> {
                             unpartneredQID);
                   }
 
-                  return ListView.builder(
-                    itemCount: partneredQuestions.length,
-                    itemBuilder: (context, i) => Column(
-                      children: [
-                        Divider(
-                          height: _screenheight * 0.01,
-                        ),
-                        ListTile(
-                          title: InkWell(
-                            child: Text(
-                              // text of question that matches id
-                              allQuestions
-                                  .where((question) =>
-                                      question.id == partneredQuestions[i].id)
-                                  .toList()[0]
-                                  .text,
-                              // get all questions
-                              // display matching text for docID
+                  return partneredQuestions.isEmpty
+                      ? Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: _screenwidth * 0.05,
+                              vertical: _screenheight * 0.05),
+                          child: Text(
+                            "No Active Question. Press the + to add new ones",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: _screenheight * 0.04,
+                                color: Theme.of(context)
+                                    .primaryColor
+                                    .withOpacity(0.5),
+                                fontFamily: 'PT_Serif'),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: partneredQuestions.length,
+                          itemBuilder: (context, i) => Column(
+                            children: [
+                              Divider(
+                                height: _screenheight * 0.01,
+                              ),
+                              ListTile(
+                                title: InkWell(
+                                  child: Text(
+                                    // text of question that matches id
+                                    allQuestions
+                                        .where((question) =>
+                                            question.id ==
+                                            partneredQuestions[i].id)
+                                        .toList()[0]
+                                        .text,
+                                    // get all questions
+                                    // display matching text for docID
 
-                              style: TextStyle(
-                                  fontFamily: 'PT_Serif',
-                                  fontSize: _screenheight * 0.025),
-                            ),
-                            onTap: () {
-                              Navigator.pushNamed(
-                                      context, ActiveChatsScreen.routeName,
-                                      arguments: partneredQuestions[i])
-                                  .then((value) => rebuild(value));
-                            },
+                                    style: TextStyle(
+                                        fontFamily: 'PT_Serif',
+                                        fontSize: _screenheight * 0.025),
+                                  ),
+                                  onTap: () {
+                                    Navigator.pushNamed(context,
+                                            ActiveChatsScreen.routeName,
+                                            arguments: partneredQuestions[i])
+                                        .then((value) => rebuild(value));
+                                  },
+                                ),
+                                trailing: FutureBuilder(
+                                  future: DatabaseService().doesQNewPartner(
+                                      partneredQuestions[i].id,
+                                      user.uid,
+                                      partneredQuestions[i].activeChats),
+                                  builder: (ctx, snapshot) {
+                                    if (snapshot.connectionState !=
+                                        ConnectionState.waiting) {
+                                      if (snapshot.data == true) {
+                                        return CircleAvatar(
+                                          backgroundColor: Colors.red,
+                                          foregroundColor: Colors.white,
+                                          child: Icon(
+                                            Icons.star,
+                                          ),
+                                        );
+                                      }
+                                      return SizedBox();
+                                    }
+                                    return SizedBox();
+                                  },
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.all(_screenheight * 0.01),
+                                child: Wrap(
+                                    spacing: _screenheight * 0.025,
+                                    children: List<Widget>.generate(
+                                      allQuestions
+                                          .where((question) =>
+                                              question.id ==
+                                              partneredQuestions[i].id)
+                                          .toList()[0]
+                                          .questionCategories
+                                          .length,
+                                      (int index) {
+                                        return Icon(
+                                          Icons.circle,
+                                          color: correspondingColor(
+                                                  allCategories,
+                                                  allQuestions
+                                                      .where((question) =>
+                                                          question.id ==
+                                                          partneredQuestions[i]
+                                                              .id)
+                                                      .toList()[0]
+                                                      .questionCategories[index])
+                                              .withOpacity(0.8),
+                                        );
+                                      },
+                                    )),
+                              ),
+                            ],
                           ),
-                          trailing: FutureBuilder(
-                            future: DatabaseService().doesQNewPartner(
-                                partneredQuestions[i].id,
-                                user.uid,
-                                partneredQuestions[i].activeChats),
-                            builder: (ctx, snapshot) {
-                              if (snapshot.connectionState !=
-                                  ConnectionState.waiting) {
-                                if (snapshot.data == true) {
-                                  return CircleAvatar(
-                                    backgroundColor: Colors.red,
-                                    foregroundColor: Colors.white,
-                                    child: Icon(
-                                      Icons.star,
-                                    ),
-                                  );
-                                }
-                                return SizedBox();
-                              }
-                              return SizedBox();
-                            },
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.all(_screenheight * 0.01),
-                          child: Wrap(
-                              spacing: _screenheight * 0.025,
-                              children: List<Widget>.generate(
-                                allQuestions
-                                    .where((question) =>
-                                        question.id == partneredQuestions[i].id)
-                                    .toList()[0]
-                                    .questionCategories
-                                    .length,
-                                (int index) {
-                                  return Icon(
-                                    Icons.circle,
-                                    color: correspondingColor(
-                                            allCategories,
-                                            allQuestions
-                                                .where((question) =>
-                                                    question.id ==
-                                                    partneredQuestions[i].id)
-                                                .toList()[0]
-                                                .questionCategories[index])
-                                        .withOpacity(0.8),
-                                  );
-                                },
-                              )),
-                        ),
-                      ],
-                    ),
-                  );
+                        );
                 });
           }),
       floatingActionButton: FloatingActionButton(

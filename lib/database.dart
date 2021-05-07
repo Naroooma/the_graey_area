@@ -9,8 +9,7 @@ import 'models/message.dart';
 import 'models/question.dart';
 
 class DatabaseService {
-  // users, questions, categories, references
-  int counter = 0;
+  // references
   final CollectionReference usersCollection =
       Firestore.instance.collection('users');
   final CollectionReference questionsCollection =
@@ -19,18 +18,6 @@ class DatabaseService {
       Firestore.instance.collection('categories');
   final CollectionReference userNamesCollection =
       Firestore.instance.collection('userNames');
-
-  // void allCateogiresData() {
-  //   StreamSubscription allCategoriesListener;
-  //   Stream<QuerySnapshot> allCategoriesSnapshot =
-  //       categoriesCollection.snapshots();
-
-  //   allCategoriesListener = allCategoriesSnapshot.listen((allCategories) async {
-  //     Provider.of<Categories>(context)
-  //   });
-  // }
-  //
-  //
 
   Stream<List<Category>> get allCategories {
     return categoriesCollection.snapshots().map((list) {
@@ -244,40 +231,6 @@ class DatabaseService {
     return messageC - m1count;
   }
 
-  // total unread messages in a specific question
-  // Stream<dynamic> totalMessagesForQ(
-  //     String qid, String uid, List<dynamic> chats) {
-  //   List<Stream> l = [];
-  //   //counter = await unreadMessageCounter(qid, cid, uid, data)
-
-  //   // for loop to open all streams
-  //   for (var cid in chats) {
-  //     // ignore: cancel_subscriptions
-  //     l.add(messageCount(qid, cid));
-  //   }
-  //   return StreamGroup.merge(l);
-  // }
-
-  // Future<int> totalreadMessagesForQ(
-  //     String qid, String uid, List<dynamic> chats) async {
-  //   int counter = 0;
-  //   for (var cid in chats) {
-  //     // ignore: cancel_subscriptions
-  //     DocumentSnapshot messagesSnapshot = await questionsCollection
-  //         .document(qid)
-  //         .collection('chats')
-  //         .document(cid)
-  //         .get();
-
-  //     int m1count = messagesSnapshot.data["${uid}messageCount"] == null
-  //         ? 0
-  //         : messagesSnapshot.data["${uid}messageCount"];
-
-  //     counter += m1count;
-  //   }
-  //   return counter;
-  // }
-
   void seenPartner(String qid, String cid, String uid) {
     questionsCollection
         .document(qid)
@@ -301,17 +254,13 @@ class DatabaseService {
         : false;
   }
 
-  Future<void> doesQNewPartner(
+  Future<bool> doesQNewPartner(
       String qid, String uid, List<dynamic> chats) async {
     for (var cid in chats) {
       if (!await partnerSeen(qid, cid, uid)) {
         return true;
       }
     }
+    return false;
   }
-
-  // check if user half answered specific question, if so return first answer
-
-  // check if searching for partner in specific question
-
 }

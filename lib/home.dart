@@ -44,13 +44,6 @@ class _HomeState extends State<Home> {
             return FutureBuilder(
               future: catChosen(),
               builder: (ctx, futuresnapshot) {
-                // need to log out because token persists, but provider does not
-                //Provider.of<Auth>(ctx).signout();
-
-                //final isNewUser =
-                //    userSnapshot.data.metadata.lastSignInTime ==
-                //        userSnapshot.data.metadata.creationTime;
-                //final isNewUser = Provider.of<Auth>(ctx).isNewUser;
                 if (futuresnapshot.connectionState == ConnectionState.waiting) {
                   return Scaffold(
                     backgroundColor: Colors.grey[800],

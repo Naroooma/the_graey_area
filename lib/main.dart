@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -36,23 +34,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
 
-  Future<bool> catChosen() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    try {
-      DocumentSnapshot favCategories =
-          await Firestore.instance.collection('users').document(user.uid).get();
-      if (favCategories['fav_categories'] == null) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (exception) {
-      print("ERROR");
-      print(exception);
-    }
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -61,9 +42,13 @@ class _MyAppState extends State<MyApp> {
           value: DatabaseService(),
         ),
         StreamProvider<List<Category>>.value(
-            value: DatabaseService().allCategories),
+          value: DatabaseService().allCategories,
+          initialData: [],
+        ),
         StreamProvider<List<Question>>.value(
-            value: DatabaseService().allQuestions),
+          value: DatabaseService().allQuestions,
+          initialData: [],
+        ),
         // StreamProvider<FirebaseUser>.value(
         //   value: FirebaseAuth.instance.onAuthStateChanged,
         // ),

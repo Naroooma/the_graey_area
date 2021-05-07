@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Categories with ChangeNotifier {
-  // start _favCategories to be equal to firebase favCategories
   List _favCategories = [];
-  bool catExist = false;
 
   get getFavCategories {
     return [..._favCategories];

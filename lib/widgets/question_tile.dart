@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:provider/provider.dart';
+import 'package:the_graey_area/models/category.dart';
 import 'package:the_graey_area/screens/question_screen.dart';
 
 class QuestionTile extends StatelessWidget {
   final _question;
-  final List allCategories;
-
-  QuestionTile(this._question, this.allCategories);
+  QuestionTile(this._question);
 
   Color correspondingColor(List<dynamic> _allCategories, String categoryName) {
     var color;
@@ -21,6 +21,7 @@ class QuestionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<dynamic> allCategories = Provider.of<List<Category>>(context);
     var _screenheight =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     var _screenwidth = MediaQuery.of(context).size.width;

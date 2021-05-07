@@ -1,6 +1,3 @@
-// button to find new partner for the question
-// list / grid / scroll of all users
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/active_question.dart';
@@ -42,6 +39,11 @@ class _ActiveChatsScreenState extends State<ActiveChatsScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        title: Text(
+          "Active Chats",
+          style: TextStyle(
+              color: Theme.of(context).primaryColor, fontFamily: 'PT_Serif'),
+        ),
         backgroundColor: Colors.grey[300],
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
@@ -127,7 +129,15 @@ class _ActiveChatsScreenState extends State<ActiveChatsScreen> {
                             builder: (context, partsnapshot) {
                               if (partsnapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return Container();
+                                return Container(
+                                    alignment: Alignment.center,
+                                    padding:
+                                        EdgeInsets.all(_screenheight * 0.012),
+                                    child: CircularProgressIndicator(
+                                        valueColor:
+                                            new AlwaysStoppedAnimation<Color>(
+                                                Theme.of(context)
+                                                    .primaryColor)));
                               } else {
                                 return ListTile(
                                   title: InkWell(

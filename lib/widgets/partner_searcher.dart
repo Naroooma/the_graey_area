@@ -17,7 +17,6 @@ class PartnerSearcher extends StatelessWidget {
 
     var _screenheight =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
-    var _screenwidth = MediaQuery.of(context).size.width;
 
     return FutureBuilder(
       future: Provider.of<Partner>(context, listen: false)

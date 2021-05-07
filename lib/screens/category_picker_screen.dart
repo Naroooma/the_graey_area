@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:the_graey_area/models/category.dart';
 import 'package:the_graey_area/providers/auth.dart';
 import 'package:the_graey_area/screens/questions_chats_screen.dart';
 
 import '../database.dart';
-import '../widgets/category/category_button.dart';
 import '../widgets/category/category_list.dart';
 import '../providers/categories.dart';
 
@@ -16,8 +14,6 @@ class CategoryPickerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = Provider.of<Auth>(context).user;
 
-    List<dynamic> allCategories = Provider.of<List<Category>>(context);
-
     var _screenheight =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     var _screenwidth = MediaQuery.of(context).size.width;
@@ -25,8 +21,8 @@ class CategoryPickerScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: Center(
-        // if user has logged out, close stream
-        child: StreamBuilder<Object>(
+        // if user has logged out, the stream will close
+        child: StreamBuilder(
           stream: DatabaseService().favCategories(user.uid),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -114,123 +110,7 @@ class CategoryPickerScreen extends StatelessWidget {
                     height: _screenheight * 0.02,
                   ),
                   Expanded(
-                    child: CategoryList(
-                      snapshot.data,
-                      allCategories,
-                      /* child: Stack(
-                            children: [
-                              SizedBox(
-                                height: 700,
-                                width: 350,
-                              ),
-                              Positioned(
-                                top: 10,
-                                child: CategoryButton(
-                                  text: 'Economics',
-                                  color: Colors.lightBlue[200],
-                                  size: 120,
-                                ),
-                              ),
-                              Positioned(
-                                left: 125,
-                                top: 50,
-                                child: CategoryButton(
-                                  text: 'Politics',
-                                  color: Colors.limeAccent[200],
-                                  size: 100,
-                                ),
-                              ),
-                              Positioned(
-                                right: 0,
-                                top: 20,
-                                child: CategoryButton(
-                                  text: 'U.S.A',
-                                  color: Colors.red,
-                                  size: 115,
-                                ),
-                              ),
-                              Positioned(
-                                left: 40,
-                                top: 135,
-                                child: CategoryButton(
-                                  text: 'Philosophy',
-                                  color: Colors.greenAccent[400],
-                                  size: 115,
-                                ),
-                              ),
-                              Positioned(
-                                right: 40,
-                                top: 140,
-                                child: CategoryButton(
-                                  text: 'Middle East',
-                                  color: Colors.orange[400],
-                                  size: 120,
-                                ),
-                              ),
-                              Positioned(
-                                left: 105,
-                                top: 240,
-                                child: CategoryButton(
-                                  text: 'Global',
-                                  color: Colors.orange[800],
-                                  size: 120,
-                                ),
-                              ),
-                              Positioned(
-                                top: 270,
-                                child: CategoryButton(
-                                  text: 'Health',
-                                  color: Colors.yellow[400],
-                                  size: 100,
-                                ),
-                              ),
-                              Positioned(
-                                right: 0,
-                                top: 270,
-                                child: CategoryButton(
-                                  text: 'Ethics',
-                                  color: Colors.deepPurple[500],
-                                  size: 120,
-                                ),
-                              ),
-                              Positioned(
-                                left: 55,
-                                top: 360,
-                                child: CategoryButton(
-                                  text: 'Culture',
-                                  color: Colors.blueAccent[700],
-                                  size: 120,
-                                ),
-                              ),
-                              Positioned(
-                                right: 40,
-                                top: 400,
-                                child: CategoryButton(
-                                  text: 'Technology',
-                                  color: Colors.purpleAccent,
-                                  size: 130,
-                                ),
-                              ),
-                              Positioned(
-                                top: 480,
-                                child: CategoryButton(
-                                  text: 'Europe',
-                                  color: Colors.redAccent[700],
-                                  size: 120,
-                                ),
-                              ),
-                              Positioned(
-                                left: 120,
-                                top: 530,
-                                child: CategoryButton(
-                                  text: 'Sport',
-                                  color: Colors.teal[400],
-                                  size: 120,
-                                ),
-                              ),
-                            ],
-                          ), */
-                    ),
+                    child: CategoryList(),
                   )
                 ],
               );

@@ -138,7 +138,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
           : AppBar(
               automaticallyImplyLeading: false,
               title: Text(
-                "Questions",
+                "New Questions",
                 style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontFamily: 'PT_Serif'),
@@ -222,10 +222,10 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                       : matchQuestions.length,
                   itemBuilder: (ctx, index) {
                     return QuestionTile(
-                        _searchActive
-                            ? searchQuestions[index]
-                            : matchQuestions[index],
-                        allCategories);
+                      _searchActive
+                          ? searchQuestions[index]
+                          : matchQuestions[index],
+                    );
                   },
                 ),
               );
