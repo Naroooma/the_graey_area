@@ -24,20 +24,13 @@ class _NewMessageState extends State<NewMessage> {
     final user = await FirebaseAuth.instance.currentUser();
     final userData =
         await Firestore.instance.collection('users').document(user.uid).get();
-    Firestore.instance
-        .collection('questions')
-        .document(widget.qID)
-        .collection('chats')
-        .document(widget.chatID)
-        .collection('messages')
-        .add({
-      'text': _enteredMessage,
-      'createdAt': Timestamp.now(),
-      'userId': user.uid,
-      'username': userData['username'],
-    });
+
+    // send message to chat
+    DatabaseService().sendMessage(widget.qID, widget.chatID, user.uid,
+        userData['username'], _enteredMessage);
     _controller.clear();
 
+    // update messages counter
     DatabaseService().newMessage(widget.qID, widget.chatID, uid);
   }
 

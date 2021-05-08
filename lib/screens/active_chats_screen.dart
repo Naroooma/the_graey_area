@@ -1,6 +1,3 @@
-// button to find new partner for the question
-// list / grid / scroll of all users
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_graey_area/models/active_question.dart';
@@ -42,6 +39,11 @@ class _ActiveChatsScreenState extends State<ActiveChatsScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        title: Text(
+          "Active Chats",
+          style: TextStyle(
+              color: Theme.of(context).primaryColor, fontFamily: 'PT_Serif'),
+        ),
         backgroundColor: Colors.grey[300],
         iconTheme: IconThemeData(
           color: Theme.of(context).primaryColor,
@@ -56,8 +58,7 @@ class _ActiveChatsScreenState extends State<ActiveChatsScreen> {
         ),
         actions: [
           GestureDetector(
-            child: Icon(Icons.menu,
-                size: _screenheight * 0.035), // change this size and style
+            child: Icon(Icons.menu, size: _screenheight * 0.035),
             onTap: () => _scaffoldKey.currentState.openEndDrawer(),
           ),
           SizedBox(
@@ -102,141 +103,144 @@ class _ActiveChatsScreenState extends State<ActiveChatsScreen> {
           SizedBox(height: _screenheight * 0.035),
           Expanded(
             child: StreamBuilder<List<dynamic>>(
-                stream: DatabaseService().activeChatsforQ(questionID, user.uid),
-                builder: (context, snapshot) {
-                  if (snapshot.data == null) {
-                    return CircularProgressIndicator();
-                  }
-                  List activeChats = snapshot.data;
-                  return ListView.builder(
-                    padding: EdgeInsets.all(0),
-                    itemCount: activeChats.length,
-                    itemBuilder: (context, i) => Column(
-                      children: [
-                        Divider(
-                          height: _screenheight * 0.01,
-                        ),
-                        FutureBuilder(
-                            future: DatabaseService().partnerUsername(
-                                activeChats[i], question.id, user.uid),
-                            builder: (context, partsnapshot) {
-                              if (partsnapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Container();
-                              } else {
-                                return ListTile(
-                                  title: InkWell(
-                                    child: Text(
-                                      // get all questions
-                                      // display matching text for docID
-                                      partsnapshot.data == null
-                                          ? 'Deleted User'
-                                          : partsnapshot.data,
-                                      style: TextStyle(
-                                          fontFamily: 'PT_Serif',
-                                          fontSize: _screenheight * 0.025),
-                                    ),
-                                    onTap: () {
-                                      Navigator.of(context).pushNamed(
-                                          ChatScreen.routeName,
-                                          arguments: [
-                                            question.id,
-                                            activeChats[i],
-                                          ]).then((value) => rebuild(value));
-                                    },
-                                  ),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      FutureBuilder(
-                                          future: DatabaseService().partnerSeen(
-                                              question.id,
-                                              activeChats[i],
-                                              user.uid),
-                                          builder: (context, snapshot) {
-                                            if (snapshot.connectionState !=
-                                                ConnectionState.waiting) {
-                                              if (snapshot.data == false) {
-                                                return CircleAvatar(
-                                                  radius: _screenheight * 0.025,
-                                                  backgroundColor: Colors.red,
-                                                  foregroundColor: Colors.white,
-                                                  child: Icon(
-                                                    Icons.star,
-                                                  ),
-                                                );
-                                              }
-                                              return SizedBox();
-                                            }
-                                            return SizedBox();
-                                          }),
-                                      StreamBuilder<Object>(
-                                          stream: DatabaseService()
-                                              .messageCount(
-                                                  question.id, activeChats[i]),
-                                          builder:
-                                              (context, messageCountSnapshot) {
-                                            if (messageCountSnapshot.data ==
-                                                null) {
-                                              return SizedBox();
-                                            }
-                                            return FutureBuilder(
-                                                future: DatabaseService()
-                                                    .unreadMessageCounter(
-                                                        question.id,
-                                                        activeChats[i],
-                                                        user.uid,
-                                                        messageCountSnapshot
-                                                            .data),
-                                                builder: (context, snapshot) {
-                                                  if (snapshot
-                                                          .connectionState !=
-                                                      ConnectionState.waiting) {
-                                                    if (snapshot.data == 0) {
-                                                      return SizedBox();
-                                                    } else {
-                                                      return Row(
-                                                        children: [
-                                                          SizedBox(
-                                                            width:
-                                                                _screenwidth *
-                                                                    0.025,
-                                                          ),
-                                                          CircleAvatar(
-                                                            radius:
-                                                                _screenheight *
-                                                                    0.025,
-                                                            backgroundColor:
-                                                                Colors.red,
-                                                            child: Text(
-                                                              "${snapshot.data}",
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      _screenheight *
-                                                                          0.025,
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      );
-                                                    }
-                                                  }
-                                                  return SizedBox();
-                                                });
-                                          }),
-                                    ],
-                                  ),
-                                );
-                              }
-                            }),
-                      ],
+              stream: DatabaseService().activeChatsforQ(questionID, user.uid),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      valueColor: new AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).primaryColor),
                     ),
                   );
-                }),
+                }
+                List activeChats = snapshot.data;
+                return ListView.builder(
+                  padding: EdgeInsets.all(0),
+                  itemCount: activeChats.length,
+                  itemBuilder: (context, i) => Column(
+                    children: [
+                      Divider(
+                        height: _screenheight * 0.01,
+                      ),
+                      FutureBuilder(
+                        future: DatabaseService().partnerUsername(
+                            activeChats[i], question.id, user.uid),
+                        builder: (context, partsnapshot) {
+                          if (partsnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Container(
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.all(_screenheight * 0.012),
+                                child: CircularProgressIndicator(
+                                    valueColor:
+                                        new AlwaysStoppedAnimation<Color>(
+                                            Theme.of(context).primaryColor)));
+                          } else {
+                            return ListTile(
+                              title: InkWell(
+                                child: Text(
+                                  // display matching username
+                                  partsnapshot.data == null
+                                      ? 'Deleted User'
+                                      : partsnapshot.data,
+                                  style: TextStyle(
+                                      fontFamily: 'PT_Serif',
+                                      fontSize: _screenheight * 0.025),
+                                ),
+                                onTap: () {
+                                  Navigator.of(context).pushNamed(
+                                      ChatScreen.routeName,
+                                      arguments: [
+                                        question.id,
+                                        activeChats[i],
+                                      ]).then((value) => rebuild(value));
+                                },
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  FutureBuilder(
+                                      future: DatabaseService().partnerSeen(
+                                          question.id,
+                                          activeChats[i],
+                                          user.uid),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState !=
+                                            ConnectionState.waiting) {
+                                          if (snapshot.data == false) {
+                                            return CircleAvatar(
+                                              radius: _screenheight * 0.025,
+                                              backgroundColor: Colors.red,
+                                              foregroundColor: Colors.white,
+                                              child: Icon(
+                                                Icons.star,
+                                              ),
+                                            );
+                                          }
+                                          return SizedBox();
+                                        }
+                                        return SizedBox();
+                                      }),
+                                  StreamBuilder<Object>(
+                                    stream: DatabaseService().messageCount(
+                                        question.id, activeChats[i]),
+                                    builder: (context, messageCountSnapshot) {
+                                      if (messageCountSnapshot.data == null) {
+                                        return SizedBox();
+                                      }
+                                      return FutureBuilder(
+                                        future: DatabaseService()
+                                            .unreadMessageCounter(
+                                                question.id,
+                                                activeChats[i],
+                                                user.uid,
+                                                messageCountSnapshot.data),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState !=
+                                              ConnectionState.waiting) {
+                                            if (snapshot.data == 0) {
+                                              return SizedBox();
+                                            } else {
+                                              return Row(
+                                                children: [
+                                                  SizedBox(
+                                                    width: _screenwidth * 0.025,
+                                                  ),
+                                                  CircleAvatar(
+                                                    radius:
+                                                        _screenheight * 0.025,
+                                                    backgroundColor: Colors.red,
+                                                    child: Text(
+                                                      "${snapshot.data}",
+                                                      style: TextStyle(
+                                                          fontSize:
+                                                              _screenheight *
+                                                                  0.025,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            }
+                                          }
+                                          return SizedBox();
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),

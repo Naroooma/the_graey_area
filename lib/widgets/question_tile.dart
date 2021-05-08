@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:provider/provider.dart';
+import 'package:the_graey_area/models/category.dart';
 import 'package:the_graey_area/screens/question_screen.dart';
 
 class QuestionTile extends StatelessWidget {
   final _question;
-  final List allCategories;
-
-  QuestionTile(this._question, this.allCategories);
+  QuestionTile(this._question);
 
   Color correspondingColor(List<dynamic> _allCategories, String categoryName) {
     var color;
@@ -21,6 +21,7 @@ class QuestionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<dynamic> allCategories = Provider.of<List<Category>>(context);
     var _screenheight =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     var _screenwidth = MediaQuery.of(context).size.width;
@@ -53,22 +54,24 @@ class QuestionTile extends StatelessWidget {
             Container(
               margin: EdgeInsets.all(_screenheight * 0.01),
               child: Wrap(
-                  spacing: _screenheight * 0.025,
-                  children: List<Widget>.generate(
-                    _question.questionCategories.length,
-                    (int index) {
-                      return Chip(
-                        backgroundColor: correspondingColor(allCategories,
-                                _question.questionCategories[index])
-                            .withOpacity(0.8),
-                        labelStyle:
-                            TextStyle(color: Theme.of(context).primaryColor),
-                        label: Text(
-                          _question.questionCategories[index],
-                        ),
-                      );
-                    },
-                  )),
+                spacing: _screenheight * 0.025,
+                children: List<Widget>.generate(
+                  _question.questionCategories.length,
+                  (int index) {
+                    return Chip(
+                      backgroundColor: correspondingColor(allCategories,
+                              _question.questionCategories[index])
+                          .withOpacity(0.8),
+                      labelStyle: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: _screenheight * 0.017),
+                      label: Text(
+                        _question.questionCategories[index],
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           ],
         ),

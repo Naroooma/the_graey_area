@@ -14,12 +14,6 @@ class Auth with ChangeNotifier {
     return _firebaseUser;
   }
 
-  get isNewUser {
-    // return _authResult.additionalUserInfo.isNewUser;
-    return this._firebaseUser.metadata.creationTime ==
-        this._firebaseUser.metadata.lastSignInTime;
-  }
-
   void setUser(FirebaseUser user) {
     this._firebaseUser = user;
   }
@@ -73,14 +67,5 @@ class Auth with ChangeNotifier {
         .collection('userNames')
         .document(username)
         .setData({'id': _firebaseUser.uid});
-  }
-
-  Future<void> signout() async {
-    try {
-      _auth.signOut();
-    } catch (a) {
-      print('Sign Out Error');
-    }
-    this._firebaseUser = null;
   }
 }

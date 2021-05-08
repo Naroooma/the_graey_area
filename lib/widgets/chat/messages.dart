@@ -17,23 +17,24 @@ class Messages extends StatelessWidget {
     final user = Provider.of<Auth>(context).user;
 
     return StreamBuilder(
-        stream: DatabaseService().messagesinChat(qID, chatID, user.uid),
-        builder: (ctx, chatSnapshot) {
-          if (chatSnapshot.data == null) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          List<Message> messagesList = chatSnapshot.data;
-          DatabaseService().readMessage(qID, chatID, user.uid);
-          DatabaseService().seenPartner(qID, chatID, user.uid);
-          return ListView.builder(
-            reverse: true,
-            itemCount: messagesList.length,
-            itemBuilder: (ctx, index) => MessageBubble(
-              messagesList[index],
-            ),
+      stream: DatabaseService().messagesinChat(qID, chatID, user.uid),
+      builder: (ctx, chatSnapshot) {
+        if (chatSnapshot.data == null) {
+          return Center(
+            child: CircularProgressIndicator(),
           );
-        });
+        }
+        List<Message> messagesList = chatSnapshot.data;
+        DatabaseService().readMessage(qID, chatID, user.uid);
+        DatabaseService().seenPartner(qID, chatID, user.uid);
+        return ListView.builder(
+          reverse: true,
+          itemCount: messagesList.length,
+          itemBuilder: (ctx, index) => MessageBubble(
+            messagesList[index],
+          ),
+        );
+      },
+    );
   }
 }

@@ -10,7 +10,7 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  final _formKey = GlobalKey<FormState>(); // for form validation
+  final _formKey = GlobalKey<FormState>();
   var _isLogin = true;
   var _userEmail = '';
   var _userPassword = '';
@@ -77,7 +77,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       color: Theme.of(context).primaryColor,
                       fontFamily: 'PT_Serif',
                       fontStyle: FontStyle.italic,
-                      fontSize: _screenheight * 0.09,
+                      fontSize: _screenheight * 0.08,
                     ),
                   ),
                   SizedBox(
@@ -204,9 +204,11 @@ class _AuthScreenState extends State<AuthScreen> {
                           fontFamily: 'PT_Serif',
                         )),
                     onPressed: () {
-                      setState(() {
-                        _isLogin = !_isLogin;
-                      });
+                      setState(
+                        () {
+                          _isLogin = !_isLogin;
+                        },
+                      );
                     },
                   )
                 ],

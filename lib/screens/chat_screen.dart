@@ -47,8 +47,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         actions: [
           GestureDetector(
-            child: Icon(Icons.menu,
-                size: _screenheight * 0.035), // change this size and style
+            child: Icon(Icons.menu, size: _screenheight * 0.035),
             onTap: () => _scaffoldKey.currentState.openEndDrawer(),
           ),
           SizedBox(
