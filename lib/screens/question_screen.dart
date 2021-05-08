@@ -192,8 +192,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
         ),
         actions: [
           GestureDetector(
-            child: Icon(Icons.menu,
-                size: _screenheight * 0.035), // change this size and style
+            child: Icon(Icons.menu, size: _screenheight * 0.035),
             onTap: () => _scaffoldKey.currentState.openEndDrawer(),
           ),
           SizedBox(
@@ -216,7 +215,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
                   : AnimatedSwitcher(
                       duration: const Duration(milliseconds: 500),
                       transitionBuilder: slideAnimation,
-                      child: answerTile(_screenSize, questionId, context)),
+                      child: answerTile(_screenSize, questionId, context),
+                    ),
             ],
           ),
         ),

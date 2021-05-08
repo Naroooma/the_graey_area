@@ -39,7 +39,6 @@ class AppDrawer extends StatelessWidget {
 
                         Provider.of<Categories>(ctx, listen: false)
                             .reset(); // resets fav categories
-                        // Provider.of<Auth>(ctx, listen: false).setUser(null);
                         try {
                           FirebaseAuth.instance.signOut();
                         } catch (a) {

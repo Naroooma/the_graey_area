@@ -54,23 +54,24 @@ class QuestionTile extends StatelessWidget {
             Container(
               margin: EdgeInsets.all(_screenheight * 0.01),
               child: Wrap(
-                  spacing: _screenheight * 0.025,
-                  children: List<Widget>.generate(
-                    _question.questionCategories.length,
-                    (int index) {
-                      return Chip(
-                        backgroundColor: correspondingColor(allCategories,
-                                _question.questionCategories[index])
-                            .withOpacity(0.8),
-                        labelStyle: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: _screenheight * 0.017),
-                        label: Text(
-                          _question.questionCategories[index],
-                        ),
-                      );
-                    },
-                  )),
+                spacing: _screenheight * 0.025,
+                children: List<Widget>.generate(
+                  _question.questionCategories.length,
+                  (int index) {
+                    return Chip(
+                      backgroundColor: correspondingColor(allCategories,
+                              _question.questionCategories[index])
+                          .withOpacity(0.8),
+                      labelStyle: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: _screenheight * 0.017),
+                      label: Text(
+                        _question.questionCategories[index],
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           ],
         ),

@@ -22,30 +22,33 @@ class PartnerSearcher extends StatelessWidget {
       future: Provider.of<Partner>(context, listen: false)
           .searchForPartner(answer, lookingFor),
       builder: (ctx, snapshot) {
-        return Consumer<Partner>(builder: (context, provider, child) {
-          if (provider.chatID == 0) {
-            return Column(children: [
-              CircularProgressIndicator(),
-              SizedBox(
-                height: _screenheight * 0.07,
-              ),
-              ReqAutoText(
-                  'No Match Found Yet', _screenSize, _screenheight * 0.06),
-              SizedBox(
-                height: _screenheight * 0.025,
-              ),
-              ReqAutoText('Meanwhile, answer more questions!', _screenSize,
-                  _screenheight * 0.11)
-            ]);
-          } else if (provider.chatID != null) {
-            return Column(
-              children: [
-                ReqAutoText('Match found, press button to chat!', _screenSize,
-                    _screenheight * 0.12),
-                SizedBox(
-                  height: _screenheight * 0.06,
-                ),
-                ElevatedButton(
+        return Consumer<Partner>(
+          builder: (context, provider, child) {
+            if (provider.chatID == 0) {
+              return Column(
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(
+                    height: _screenheight * 0.07,
+                  ),
+                  ReqAutoText(
+                      'No Match Found Yet', _screenSize, _screenheight * 0.06),
+                  SizedBox(
+                    height: _screenheight * 0.025,
+                  ),
+                  ReqAutoText('Meanwhile, answer more questions!', _screenSize,
+                      _screenheight * 0.11)
+                ],
+              );
+            } else if (provider.chatID != null) {
+              return Column(
+                children: [
+                  ReqAutoText('Match found, press button to chat!', _screenSize,
+                      _screenheight * 0.12),
+                  SizedBox(
+                    height: _screenheight * 0.06,
+                  ),
+                  ElevatedButton(
                     child: Container(
                       height: (_screenSize.height -
                               MediaQuery.of(context).padding.top) *
@@ -70,13 +73,15 @@ class PartnerSearcher extends StatelessWidget {
                           ChatScreen.routeName,
                           arguments: [provider.qID, provider.chatID]);
                       provider.resetProvider();
-                    })
-              ],
-            );
-          } else {
-            return CircularProgressIndicator();
-          }
-        });
+                    },
+                  )
+                ],
+              );
+            } else {
+              return CircularProgressIndicator();
+            }
+          },
+        );
       },
     );
   }

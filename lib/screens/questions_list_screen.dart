@@ -82,8 +82,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
           width: _screenheight * 0.015,
         ),
         GestureDetector(
-          child: Icon(Icons.menu,
-              size: _screenheight * 0.035), // change this size and style
+          child: Icon(Icons.menu, size: _screenheight * 0.035),
           onTap: () => _scaffoldKey.currentState.openEndDrawer(),
         ),
         SizedBox(
@@ -130,8 +129,6 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     var _screenwidth = MediaQuery.of(context).size.width;
 
-    // if user has logged out, close stream
-
     return Scaffold(
       appBar: _searchActive
           ? buildSearchBar(_screenheight, _screenwidth)
@@ -156,10 +153,6 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                     setState(() {
                       _searchActive = !_searchActive;
                     });
-                    // showSearch(
-                    //     context: context,
-                    //     delegate:
-                    //         Search(_allQuestions, _matchQuestions, allCategories));
                   },
                   child: Icon(Icons.search, size: _screenheight * 0.035),
                 ),
@@ -167,9 +160,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
                   width: _screenheight * 0.025,
                 ),
                 GestureDetector(
-                  child: Icon(Icons.menu,
-                      size:
-                          _screenheight * 0.035), // change this size and style
+                  child: Icon(Icons.menu, size: _screenheight * 0.035),
                   onTap: () => _scaffoldKey.currentState.openEndDrawer(),
                 ),
                 SizedBox(
@@ -187,9 +178,7 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
             color: Theme.of(context).accentColor,
           ),
           onPressed: () => Navigator.pushReplacementNamed(
-              context, QuestionsChatsScreen.routeName)
-          // .then((value) => rebuild(value)),
-          ),
+              context, QuestionsChatsScreen.routeName)),
       body: StreamBuilder(
         stream: Provider.of<DatabaseService>(context).activeQuestions(user.uid),
         builder: (context, snapshot) {
@@ -236,90 +225,3 @@ class _QuestionsListScreenState extends State<QuestionsListScreen> {
     );
   }
 }
-
-// class Search extends SearchDelegate {
-//   final List<dynamic> allQuestions;
-//   final List<dynamic> matchQuestions;
-//   final List<dynamic> allCategories;
-
-//   Search(this.allQuestions, this.matchQuestions, this.allCategories);
-
-//   @override
-//   // TODO: implement searchFieldLabel
-//   String get searchFieldLabel => "Search Questions and Categories";
-
-//   @override
-//   // TODO: implement searchFieldStyle
-//   TextStyle get searchFieldStyle => TextStyle(fontSize: 15);
-
-//   @override
-//   ThemeData appBarTheme(BuildContext context) {
-//     // TODO: implement appBarTheme
-//     return ThemeData(
-//       primaryColor: Colors.grey[50],
-//       primaryIconTheme: IconThemeData(
-//         color: Colors.grey[50],
-//       ),
-//     );
-//   }
-
-//   @override
-//   List<Widget> buildActions(BuildContext context) {
-//     return [
-//       IconButton(
-//         icon: Icon(Icons.close),
-//         onPressed: () {
-//           query = "";
-//         },
-//       ),
-//     ];
-//   }
-
-//   @override
-//   Widget buildLeading(BuildContext context) {
-//     return IconButton(
-//       icon: Icon(Icons.arrow_back),
-//       onPressed: () {
-//         Navigator.pop(context);
-//       },
-//     );
-//   }
-
-//   String selectedResult;
-
-//   @override
-//   Widget buildResults(BuildContext context) {
-//     return Container(
-//       child: Center(
-//         child: Text(selectedResult),
-//       ),
-//     );
-//   }
-
-//   List<String> recentList = [];
-
-//   @override
-//   Widget buildSuggestions(BuildContext context) {
-//     List<dynamic> suggestionList = [];
-//     query.isEmpty
-//         ? suggestionList = matchQuestions
-//         : suggestionList.addAll(
-//             allQuestions.where((question) {
-//               print(question['text']);
-//               return question['text']
-//                   .toLowerCase()
-//                   .contains(query.toLowerCase());
-//             }),
-//           );
-
-//     return Container(
-//       color: Theme.of(context).primaryColor,
-//       child: ListView.builder(
-//         itemCount: suggestionList.length,
-//         itemBuilder: (ctx, index) {
-//           return QuestionTile(suggestionList[index], allCategories);
-//         },
-//       ),
-//     );
-//   }
-// }

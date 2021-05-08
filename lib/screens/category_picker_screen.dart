@@ -21,13 +21,13 @@ class CategoryPickerScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: Center(
-        // if user has logged out, the stream will close
         child: StreamBuilder(
           stream: DatabaseService().favCategories(user.uid),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
             } else {
+              // initialize provider to match favCategories from firebase
               Provider.of<Categories>(context, listen: false)
                   .initCategory(snapshot.data);
               return Column(
@@ -48,7 +48,6 @@ class CategoryPickerScreen extends StatelessWidget {
                   ),
                   Consumer<Categories>(
                     builder: (context, provider, child) {
-                      // initialize provider to match favCategories from firebase
                       return Column(
                         children: [
                           Padding(

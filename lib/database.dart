@@ -19,6 +19,7 @@ class DatabaseService {
   final CollectionReference userNamesCollection =
       Firestore.instance.collection('userNames');
 
+  // streams all categories in database
   Stream<List<Category>> get allCategories {
     return categoriesCollection.snapshots().map((list) {
       return list.documents
@@ -28,12 +29,14 @@ class DatabaseService {
     });
   }
 
+  // streams user's favorite categories
   Stream<List<dynamic>> favCategories(String uid) {
     return usersCollection.document(uid).snapshots().map((doc) {
       return doc.data['fav_categories'];
     });
   }
 
+  // updates favorite categories selection
   Future<void> updateFavCategories(String uid, List favCats) {
     return Firestore.instance
         .collection('users')
@@ -41,6 +44,7 @@ class DatabaseService {
         .updateData({'fav_categories': favCats});
   }
 
+  // streams all questions in database
   Stream<List<Question>> get allQuestions {
     return questionsCollection.snapshots().map((list) {
       return list.documents
@@ -52,6 +56,7 @@ class DatabaseService {
     });
   }
 
+  // streams all active questions for user
   Stream<List<ActiveQuestion>> activeQuestions(String uid) {
     return usersCollection
         .document(uid)
@@ -65,6 +70,7 @@ class DatabaseService {
     });
   }
 
+  // streams active chats for specific question
   Stream<List<dynamic>> activeChatsforQ(String qid, String uid) {
     return usersCollection
         .document(uid)
@@ -76,6 +82,7 @@ class DatabaseService {
     });
   }
 
+  // partner username from chat
   Future<String> partnerUsername(
       String chatID, String qID, String userID) async {
     // get all users with corresponding id
@@ -84,7 +91,6 @@ class DatabaseService {
     var partnerID = '';
 
     // find partnerID by going into chat
-    //
     var chat = await Firestore.instance
         .collection('questions')
         .document(qID)
@@ -104,6 +110,7 @@ class DatabaseService {
     return partner[0].documentID;
   }
 
+  // send question answer to active_questions
   Future<void> sendQuestionAnswer(String qid, String uid, double userOpinion) {
     return Firestore.instance
         .collection('users')
@@ -113,6 +120,7 @@ class DatabaseService {
         .setData({"answer": userOpinion}, merge: true);
   }
 
+  // checks if user is in waiting room for specific question
   Future<bool> inWaitingRoom(String qid, String uid) async {
     DocumentSnapshot waitingRoomEntry = await Firestore.instance
         .collection('questions')
@@ -124,6 +132,7 @@ class DatabaseService {
     return waitingRoomEntry == null ? false : true;
   }
 
+  // list of questionIDs that are in waiting room for user
   Future<List<String>> unPartneredList(
       List<ActiveQuestion> activeQuestions, String uid) async {
     List<String> unpartneredQsID = [];
@@ -136,6 +145,7 @@ class DatabaseService {
     return unpartneredQsID;
   }
 
+  // streams all chat messages
   Stream<List<Message>> messagesinChat(String qid, String cid, String uid) {
     return questionsCollection
         .document(qid)
@@ -159,6 +169,7 @@ class DatabaseService {
     });
   }
 
+  // send new message to firebase
   void sendMessage(String qid, String cid, String uid, String username,
       String enteredMessage) async {
     Firestore.instance
@@ -231,6 +242,7 @@ class DatabaseService {
     return messageC - m1count;
   }
 
+  // update partner seen in firebase
   void seenPartner(String qid, String cid, String uid) {
     questionsCollection
         .document(qid)
@@ -254,6 +266,7 @@ class DatabaseService {
         : false;
   }
 
+  // checks if there are new partners in the question
   Future<bool> doesQNewPartner(
       String qid, String uid, List<dynamic> chats) async {
     for (var cid in chats) {

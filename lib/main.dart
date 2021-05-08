@@ -32,15 +32,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<DatabaseService>.value(
-          value: DatabaseService(),
-        ),
         StreamProvider<List<Category>>.value(
           value: DatabaseService().allCategories,
           initialData: [],
@@ -49,16 +44,12 @@ class _MyAppState extends State<MyApp> {
           value: DatabaseService().allQuestions,
           initialData: [],
         ),
-        // StreamProvider<FirebaseUser>.value(
-        //   value: FirebaseAuth.instance.onAuthStateChanged,
-        // ),
         ChangeNotifierProvider<Categories>(
           create: (_) => Categories(),
         ),
         ChangeNotifierProvider<Auth>(
           create: (_) => Auth(),
         ),
-
         ChangeNotifierProvider<Partner>(
           create: (_) => Partner(),
         ),
