@@ -44,6 +44,9 @@ class _MyAppState extends State<MyApp> {
           value: DatabaseService().allQuestions,
           initialData: [],
         ),
+        Provider<DatabaseService>.value(
+          value: DatabaseService(),
+        ),
         ChangeNotifierProvider<Categories>(
           create: (_) => Categories(),
         ),
