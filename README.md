@@ -1,6 +1,8 @@
 # The Graey Area
 
-Unfinished Flutter Chat App...
+Anonymous chat app for dialogue on controversial topics
+
+Built in Dart/Flutter + Firebase
 
 <img src="readme-images/login.jpeg" width=250></img>
 <img src="readme-images/categorypicker.jpeg" width=250></img>
